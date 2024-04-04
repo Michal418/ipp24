@@ -13,7 +13,7 @@ class LabelInstruction extends Instruction {
     public function __construct(Argument $label)
     {
         if ($label->getIppType() !== IPPType::LABEL) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for LABEL: {$label}");
         }
 
         parent::__construct('LABEL', [$label]);

@@ -14,7 +14,7 @@ class DprintInstruction extends Instruction {
     public function __construct(Argument $symb)
     {
         if (!IPPType::isVarOrData($symb->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for DPRINT: {$symb}");
         }
 
         parent::__construct('DPRINT', [$symb]);

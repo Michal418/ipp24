@@ -13,7 +13,7 @@ class JumpInstruction extends Instruction {
     public function __construct(Argument $label)
     {
         if ($label->getIppType() !== IPPType::LABEL) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for JUMP: {$label}");
         }
 
         parent::__construct('JUMP', [$label]);

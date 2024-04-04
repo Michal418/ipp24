@@ -13,8 +13,8 @@ class WriteInstruction extends Instruction {
      */
     public function __construct(Argument $symb)
     {
-        if (IPPType::isDataType($symb->getIppType())) {
-            throw new InvalidArgumentException();
+        if (!IPPType::isVarOrData($symb->getIppType())) {
+            throw new InvalidArgumentException("Invalid argument for WRITE: {$symb}");
         }
 
         parent::__construct('WRITE', [$symb]);

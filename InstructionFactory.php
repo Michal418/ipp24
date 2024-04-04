@@ -124,11 +124,11 @@ class InstructionFactory
             }
             return new Int2CharInstruction($arguments[0], $arguments[1]);
 
-        case 'STR2INT':
+        case 'STRI2INT':
             if (count($arguments) !== 3) {
                 throw new InvalidArgumentException('STRI2INT instruction expects exactly 3 arguments');
             }
-            return new Str2IntInstruction($arguments[0], $arguments[1]);
+            return new Str2IntInstruction($arguments[0], $arguments[1], $arguments[2]);
 
         case 'READ':
             if (count($arguments) !== 2) {

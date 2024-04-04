@@ -16,7 +16,7 @@ class JumpIfEqInstruction extends Instruction {
     public function __construct(Argument $label, Argument $symb1, Argument $symb2)
     {
         if ($label->getIppType() !== IPPType::LABEL || !IPPType::isVarOrData($symb1->getIppType()) || !IPPType::isVarOrData($symb2->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invlaid arguments for JUMPIFEQ: {$label}, {$symb1}, {$symb2}");
         }
 
         parent::__construct('JUMPIFEQ', [$label, $symb1, $symb2]);

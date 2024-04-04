@@ -13,31 +13,16 @@ class InterpreterRuntimeException extends IPPException
 {
     public function __construct(int $code, string $message)
     {
-        switch ($code) {
-        case ReturnCode::SEMANTIC_ERROR:
-            $_message = "Semantic error";
-            break;
-        case ReturnCode::OPERAND_TYPE_ERROR:
-            $_message = "Operand type error";
-            break;
-        case ReturnCode::VARIABLE_ACCESS_ERROR:
-            $_message = "Variable access error";
-            break;
-        case ReturnCode::FRAME_ACCESS_ERROR:
-            $_message = "Frame access error";
-            break;
-        case ReturnCode::VALUE_ERROR:
-            $_message = "Value error";
-            break;
-        case ReturnCode::OPERAND_VALUE_ERROR:
-            $_message = "Operand value error";
-            break;
-        case ReturnCode::STRING_OPERATION_ERROR:
-            $_message = "String operation error";
-            break;
-        default:
-            $_message = "error " . $code;
-        }
+        $_message = match ($code) {
+            ReturnCode::SEMANTIC_ERROR => "Semantic error",
+            ReturnCode::OPERAND_TYPE_ERROR => "Operand type error",
+            ReturnCode::VARIABLE_ACCESS_ERROR => "Variable access error",
+            ReturnCode::FRAME_ACCESS_ERROR => "Frame access error",
+            ReturnCode::VALUE_ERROR => "Value error",
+            ReturnCode::OPERAND_VALUE_ERROR => "Operand value error",
+            ReturnCode::STRING_OPERATION_ERROR => "String operation error",
+            default => "error " . $code,
+        };
 
         $_message = $_message . ": " . $message;
 

@@ -13,7 +13,7 @@ class CallInstruction extends Instruction {
     public function __construct(Argument $label)
     {
         if ($label->getIppType() !== IPPType::LABEL) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for CALL: {$label}");
         }
 
         parent::__construct('CALL', [$label]);

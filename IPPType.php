@@ -37,4 +37,17 @@ enum IPPType {
             default => throw new InvalidArgumentException("'$value' is not IPP type")
         };
     }
+
+    static function toString(IPPType $ipptype) : string {
+        return match ($ipptype) {
+            IPPType::INT => 'int',
+            IPPType::BOOL => 'bool',
+            IPPType::STRING => 'string',
+            IPPType::NIL => 'nil',
+            IPPType::LABEL => 'label',
+            IPPType::TYPE => 'type',
+            IPPType::VAR => 'var',
+            default => throw new InvalidArgumentException("'$ipptype' is not IPP type")
+        };
+    }
 }

@@ -15,7 +15,7 @@ class ReadInstruction extends Instruction {
     public function __construct(Argument $var, Argument $type)
     {
         if ($var->getIppType() !== IPPType::VAR || $type->getIppType() != IPPType::TYPE) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid arguments for READ: {$var}, {$type}");
         }
 
         parent::__construct('READ', [$var, $type]);

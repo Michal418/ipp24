@@ -40,6 +40,7 @@ def main():
         else:
             input = ''
 
+        print(*cmd)
         p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=None, input=input.encode())
 
         code_passed = p.returncode == return_code

@@ -503,7 +503,7 @@ class Interpreter extends AbstractInterpreter
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function type(string $varCode, Argument $symbol) : void {
+    public function type_instruction(string $varCode, Argument $symbol) : void {
         $value = $this->getSymbolValue($symbol);
         if (is_int($value)) {
             $type = 'int';
@@ -559,7 +559,7 @@ class Interpreter extends AbstractInterpreter
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function exit(Argument $symbol) : void {
+    public function exit_instruction(Argument $symbol) : void {
         $exitCode = $this->getSymbolValue($symbol);
         if (!is_int($exitCode) || $exitCode < 0 || $exitCode > 9) {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_VALUE_ERROR, "Invalid value for EXIT: $exitCode.");

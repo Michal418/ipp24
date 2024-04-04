@@ -15,7 +15,7 @@ class Int2CharInstruction extends Instruction {
     public function __construct(Argument $var, Argument $symb)
     {
         if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid arguments for INT2CHAR: {$var}, {$symb}");
         }
 
         parent::__construct('INT2CHAR', [$var, $symb]);

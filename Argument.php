@@ -21,4 +21,10 @@ readonly class Argument {
     {
         return $this->text;
     }
+
+    public function __toString() : string
+    {
+        $ipptypestr = IPPType::toString($this->ipptype);
+        return "Argument(type=$ipptypestr, text=$this->text)";
+    }
 }

@@ -15,7 +15,7 @@ class MoveInstruction extends Instruction {
     public function __construct(Argument $var, Argument $symb)
     {
         if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid arguments for MOVE: {$var}, {$symb}");
         }
 
         parent::__construct('MOVE',  [$var, $symb]);

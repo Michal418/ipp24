@@ -14,7 +14,7 @@ class PushsInstruction extends Instruction {
     public function __construct(Argument $symb)
     {
         if (!IPPType::isVarOrData($symb->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for PUSHS: {$symb}");
         }
 
         parent::__construct('PUSHS', [$symb]);

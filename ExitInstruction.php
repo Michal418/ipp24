@@ -13,7 +13,7 @@ class ExitInstruction extends Instruction {
     public function __construct(Argument $symb)
     {
         if (!IPPType::isVarOrData($symb->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for EXIT: {$symb}");
         }
 
         parent::__construct('EXIT', [$symb]);
@@ -24,7 +24,7 @@ class ExitInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(Interpreter $interpreter) : void {
-        $interpreter->exit($this->getArguments()[0]);
+        $interpreter->exit_instruction($this->getArguments()[0]);
     }
 };
 

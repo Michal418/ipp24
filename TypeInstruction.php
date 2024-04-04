@@ -14,8 +14,8 @@ class TypeInstruction extends Instruction {
      */
     public function __construct(Argument $var, Argument $symb)
     {
-        if ($var->getIppType() !== IPPType::VAR || !IPPType::isDataType($symb->getIppType())) {
-            throw new InvalidArgumentException();
+        if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb->getIppType())) {
+            throw new InvalidArgumentException("Invalid arguments for TYPE: {$var}, {$symb}");
         }
 
         parent::__construct('TYPE', [$var, $symb]);
@@ -26,7 +26,7 @@ class TypeInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(Interpreter $interpreter) : void {
-        $interpreter->type($this->getArguments()[0]->getText(), $this->getArguments()[1]);
+        $interpreter->type_instruction($this->getArguments()[0]->getText(), $this->getArguments()[1]);
     }
 };
 

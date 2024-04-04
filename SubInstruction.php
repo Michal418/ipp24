@@ -17,7 +17,7 @@ class SubInstruction extends Instruction {
     public function __construct(Argument $var, Argument $symb1, Argument $symb2)
     {
         if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb1->getIppType()) || !IPPType::isVarOrData($symb2->getIppType())) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invlaid arguments for SUB: {$var}, {$symb1}, {$symb2}");
         }
 
         parent::__construct('SUB', [$var, $symb1, $symb2]);

@@ -15,8 +15,8 @@ class JumpIfNeqInstruction extends Instruction {
      */
     public function __construct(Argument $label, Argument $symb1, Argument $symb2)
     {
-        if ($label->getIppType() !== IPPType::LABEL || !IPPType::isDataType($symb1->getIppType()) || !IPPType::isDataType($symb2->getIppType())) {
-            throw new InvalidArgumentException();
+        if ($label->getIppType() !== IPPType::LABEL || !IPPType::isVarOrData($symb1->getIppType()) || !IPPType::isVarOrData($symb2->getIppType())) {
+            throw new InvalidArgumentException("Invlaid arguments for JUMPIFNEQ: {$label}, {$symb1}, {$symb2}");
         }
 
         parent::__construct('JUMPIFNEQ', [$label, $symb1, $symb2]);

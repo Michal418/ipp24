@@ -14,7 +14,7 @@ class PopsInstruction extends Instruction
     public function __construct(Argument $var)
     {
         if ($var->getIppType() !== IPPType::VAR) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException("Invalid argument for POPS: {$var}");
         }
 
         parent::__construct('PUSHS', [$var]);
