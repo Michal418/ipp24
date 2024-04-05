@@ -23,7 +23,7 @@ enum IPPType {
     /**
      * @param string $value
      * @return IPPType
-     * @throw InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     static function fromString(string $value) : IPPType {
         return match ($value) {
@@ -46,8 +46,7 @@ enum IPPType {
             IPPType::NIL => 'nil',
             IPPType::LABEL => 'label',
             IPPType::TYPE => 'type',
-            IPPType::VAR => 'var',
-            default => throw new InvalidArgumentException("'$ipptype' is not IPP type")
+            IPPType::VAR => 'var'
         };
     }
 }
