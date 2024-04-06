@@ -3,8 +3,6 @@
 namespace IPP\Student;
 
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Core\ReturnCode;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\Instruction\Instruction;
@@ -224,7 +222,6 @@ class InterpreterContext
     /**
      * @brief Najde index instrukce podle návěští.
      * @param string $label
-     * @param Instruction[] $instructions
      * @return int
      * @throws InterpreterRuntimeException
      */
