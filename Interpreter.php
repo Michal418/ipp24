@@ -7,7 +7,6 @@ use DOMElement;
 use InvalidArgumentException;
 use IPP\Core\AbstractInterpreter;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\Exception\SourceStructureException;
 use IPP\Student\Instruction\Instruction;
@@ -19,42 +18,12 @@ use IPP\Student\Instruction\Instruction;
 class Interpreter extends AbstractInterpreter
 {
     /**
-     * @var array<string, int> $labelCache
+     * @return Instruction[]
+     * @throws SourceStructureException
      */
-    private array $labelCache = [];
-
-    /**
-     * @var array<array<string, string|int|bool|null|Uninitialized>> $frameStack
-     */
-    private array $frameStack = [];
-    /**
-     * @var array<string, int|string|bool|null|Uninitialized> $globalFrame
-     */
-    private array $globalFrame = [];
-    /**
-     * @var ?array<string, int|string|bool|null|Uninitialized> $tempFrame
-     */
-    private ?array $tempFrame = null;
-    /**
-     * @var int[] $callStack
-     */
-    private array $callStack = [];
-    private int $programCounter = 0;
-    /**
-     * @var array<int|string|bool|null> $stack
-     */
-    private array $stack = [];
-
-    /**
-     * @var array<Instruction> $instructions
-     */
-    private array $instructions = [];
-
-    private bool $running = false;
-    private int $exitCode = 0;
-
-    protected function running() : bool {
-        return $this->running;
+    private function readInstructions() : array {
+        $dom = $this->source->getDOMDocument();
+        return $this->parseXml($dom);
     }
 
     /**
@@ -62,20 +31,26 @@ class Interpreter extends AbstractInterpreter
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(): int
+    public function execute() : int
     {
-        $dom = $this->source->getDOMDocument();
-        $this->instructions = $this->parseXml($dom);
-        $this->running = true;
+        $context = new InterpreterContext();
+        $io = new IO($this->input, $this->stdout, $this->stderr);
+        $instructions = $this->readInstructions();
 
-        $instructionCount = count($this->instructions);
-        while ($this->running() && $this->programCounter < $instructionCount) {
-            $instruction = $this->instructions[$this->programCounter];
-            $instruction->execute();
-            $this->programCounter++;
+        foreach ($instructions as $index => $instruction) {
+            if (is_a($instruction, 'IPP\Student\Instruction\LabelInstruction')) {
+                $context->labelCache[$instruction->getLabel()] = $index;
+            }
         }
 
-        return $this->exitCode;
+        $instructionCount = count($instructions);
+        while ($context->running && $context->programCounter < $instructionCount) {
+            $instruction = $instructions[$context->programCounter];
+            $instruction->execute($context, $io);
+            $context->programCounter++;
+        }
+
+        return $context->exitCode;
     }
 
     /**
@@ -108,11 +83,7 @@ class Interpreter extends AbstractInterpreter
          */
         $instructions = [];
         $previousOrder = -1;
-        $factory = new InstructionFactory($this->labelCache, $this->frameStack,
-            $this->globalFrame, $this->tempFrame, $this->callStack,
-            $this->programCounter, $this->stack, $this->instructions,
-            $this->running, $this->exitCode, $this->input,
-            $this->stdout, $this->stderr);
+        $factory = new InstructionFactory();
 
         foreach ($dom->getElementsByTagName('instruction') as $instructionNode) {
             if (!($instructionNode instanceof DOMElement)) {

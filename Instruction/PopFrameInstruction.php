@@ -3,52 +3,21 @@
 namespace IPP\Student\Instruction;
 
 
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
-use IPP\Student\Uninitialized;
+use IPP\Student\InterpreterContext;
+use IPP\Student\IO;
 
 class PopFrameInstruction extends Instruction {
-    /**
-     * @param array<string, int> $labelCache
-     * * @param array<array<string, string|int|bool|null|Uninitialized>> $frameStack
-     * * @param array<array<string, string|int|bool|null|Uninitialized>> $globalFrame
-     * * @param ?array<string, int|string|bool|null|Uninitialized> $tempFrame
-     * * @param int[] $callStack
-     * * @param int $programCounter
-     * * @param array<int|string|bool|null> $stack
-     * * @param Instruction[] $instructions
-     * * @param bool $running
-     * * @param int $exitCode
-     * * @param InputReader $input
-     * * @param OutputWriter $stdout
-     * * @param OutputWriter $stderr
-     */
-    public function __construct(array       & $labelCache,
-                                array       & $frameStack,
-                                array       & $globalFrame,
-                                ?array      & $tempFrame,
-                                array       & $callStack,
-                                int         & $programCounter,
-                                array       & $stack,
-                                array       & $instructions,
-                                bool        & $running,
-                                int         & $exitCode,
-                                InputReader & $input,
-                                OutputWriter & $stdout,
-                                OutputWriter & $stderr)
+    public function __construct()
     {
-        parent::__construct('POPFRAME', $labelCache, $frameStack, $globalFrame,
-            $tempFrame, $callStack, $programCounter, $stack, $instructions, $running, $exitCode,
-            $input, $stdout, $stderr);
+        parent::__construct('POPFRAME');
     }
 
     /**
      * @throws InterpreterRuntimeException
      */
-    public function execute() : void {
-        $this->popFrame();
+    public function execute(InterpreterContext & $context, IO $io) : void {
+        $context->popFrame();
     }
 };
 

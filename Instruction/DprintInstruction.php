@@ -10,57 +10,30 @@ use IPP\Core\Interface\OutputWriter;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\Interpreter;
+use IPP\Student\InterpreterContext;
+use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Uninitialized;
 
 class DprintInstruction extends Instruction {
     /**
      * @param Argument $symb
-     * @param array<string, int> $labelCache
-     * @param array<array<string, string|int|bool|null|Uninitialized>> $frameStack
-     * @param array<array<string, string|int|bool|null|Uninitialized>> $globalFrame
-     * @param ?array<string, int|string|bool|null|Uninitialized> $tempFrame
-     * @param int[] $callStack
-     * @param int $programCounter
-     * @param array<int|string|bool|null> $stack
-     * @param Instruction[] $instructions
-     * @param bool $running
-     * @param int $exitCode
-     * @param InputReader $input
-     * @param OutputWriter $stdout
-     * @param OutputWriter $stderr
-     * @throws InvalidArgumentException
      */
-    public function __construct(protected Argument $symb,
-                                array & $labelCache,
-                                array & $frameStack,
-                                array & $globalFrame,
-                                ?array & $tempFrame,
-                                array & $callStack,
-                                int   & $programCounter,
-                                array & $stack,
-                                array & $instructions,
-                                bool  & $running,
-                                int   & $exitCode,
-                                InputReader & $input,
-                                OutputWriter & $stdout,
-                                OutputWriter & $stderr)
+    public function __construct(protected Argument $symb)
     {
         if (!IPPType::isVarOrData($symb->getIppType())) {
             throw new InvalidArgumentException("Invalid argument for DPRINT: {$symb}");
         }
 
-        parent::__construct('DPRINT', $labelCache, $frameStack, $globalFrame,
-            $tempFrame, $callStack, $programCounter, $stack, $instructions, $running, $exitCode,
-            $input, $stdout, $stderr);
+        parent::__construct('DPRINT');
     }
 
     /**
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute() : void {
-        $value = $this->getSymbolValue($this->symb);
-        $this->stderr->writeString((string) $value);
+    public function execute(InterpreterContext & $context, IO $io) : void {
+        $value = $context->getSymbolValue($this->symb);
+        $io->errString((string) $value);
     }
 }
