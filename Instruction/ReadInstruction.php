@@ -40,6 +40,7 @@ class ReadInstruction extends Instruction {
             'string' => $io->readString(),
             default => throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: '$t'"),
         };
+
         $context->setVariable($this->var->getText(), $value);
     }
 

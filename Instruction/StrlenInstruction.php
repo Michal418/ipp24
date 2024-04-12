@@ -43,7 +43,8 @@ class StrlenInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STRLEN: ($valueType) '$value'.");
         }
 
-        $context->setVariable($this->var->getText(), strlen($value));
+        $result = mb_strlen($value , encoding: 'UTF-8');
+        $context->setVariable($this->var->getText(), $result);
     }
 
     public function __toString() : string {

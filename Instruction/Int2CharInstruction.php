@@ -48,7 +48,8 @@ class Int2CharInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for INT2CHAR: $value.");
         }
 
-        $context->setVariable($this->var->getText(), IntlChar::chr($value));
+        $result = mb_chr($value, encoding: 'UTF-8');
+        $context->setVariable($this->var->getText(), $result);
     }
 
     public function __toString() : string {

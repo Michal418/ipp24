@@ -3,7 +3,6 @@
 namespace IPP\Student\Instruction;
 
 
-use _PHPStan_5473b6701\React\Dns\Query\RetryExecutor;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;

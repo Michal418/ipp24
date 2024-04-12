@@ -48,15 +48,18 @@ class SetCharInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for SETCHAR: ($stringTYpe) '$string', ($indexType) '$index', ($charType) '$char'.");
         }
 
-        if ($index < 0 || $index >= strlen($string)) {
+        if ($index < 0 || $index >= mb_strlen($string, encoding: 'UTF-8')) {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for SETCHAR: $string, $index, $char.");
         }
 
-        if (strlen($char) > 1) {
-            $char = $char[0];
+        if (mb_strlen($char, encoding: 'UTF-8') > 1) {
+            $char = mb_substr($char, 0, 1);
         }
 
-        $string[$index] = $char;
+        $before = mb_substr($string, 0, $index, encoding: 'UTF-8');
+        $after = mb_substr($string, $index + 1, encoding: 'UTF-8');
+
+        $string = $before . $char . $after;
         $context->setVariable($this->var->getText(), $string);
     }
 

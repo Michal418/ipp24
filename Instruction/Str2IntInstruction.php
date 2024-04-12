@@ -48,11 +48,15 @@ class Str2IntInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STR2INT: ($stringType) '$string', ($indexType) '$index'.");
         }
 
-        if ($index < 0 || $index >= strlen($string)) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for STR2INT: '$string', '$index'.");
+        $len = mb_strlen($string, encoding: 'UTF-8');
+        if ($index < 0 || $index >= $len) {
+            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR,
+                "Invalid index for STR2INT: string='$string' of len $len, index='$index'.");
         }
 
-        $context->setVariable($this->var->getText(), IntlChar::ord($string[$index]));
+        $mbChar = mb_substr($string, $index, 1, encoding: 'UTF-8');
+        $result = mb_ord($mbChar, encoding: 'UTF-8');
+        $context->setVariable($this->var->getText(), $result);
     }
 
     public function __toString() : string {

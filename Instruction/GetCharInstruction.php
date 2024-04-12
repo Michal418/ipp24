@@ -51,11 +51,13 @@ class GetCharInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for GETCHAR: ($stringType) '$string'.");
         }
 
-        if ($index < 0 || $index >= strlen($string)) {
+
+        if ($index < 0 || $index >= mb_strlen($string, encoding: 'UTF-8')) {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid index for GETCHAR: $string, $index.");
         }
 
-        $context->setVariable($this->var->getText(), $string[$index]);
+        $char = mb_substr($string, $index, 1, encoding: 'UTF-8');
+        $context->setVariable($this->var->getText(), $char);
     }
 
     public function __toString() : string {

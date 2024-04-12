@@ -39,7 +39,7 @@ def main():
         if pathlib.Path(test + '.in').exists():
             cmd.append('--input=' + test + '.in')
 
-        with open(test + '.rc', 'r') as file:
+        with open(test + '.rc', 'r', encoding='utf-8') as file:
             return_code = int(file.read())
 
         if pathlib.Path(test + '.out').exists():
@@ -48,15 +48,15 @@ def main():
             expected_output = None
 
         if pathlib.Path(test + '.in').exists():
-            input = pathlib.Path(test + '.in').read_text()
+            input = pathlib.Path(test + '.in').read_bytes()
         else:
             input = ''
 
         print(*cmd)
-        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=None, input=input.encode())
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=None, input=input)
 
         code_passed = p.returncode == return_code
-        output_passed = expected_output is None or p.stdout.decode() == expected_output
+        output_passed = expected_output is None or p.stdout == expected_output.encode()
 
         if code_passed and output_passed:
             print(f'{BLUE}Test {path.name} passed{RESET}')
@@ -66,7 +66,7 @@ def main():
             print(f'{RED}Test {path.name} failed with return code {p.returncode} instead of {return_code}{RESET}')
 
         if not output_passed:
-            out = escape(p.stdout.decode())
+            out = escape(p.stdout.decode(errors='replace'))
             expect = escape(expected_output) if expected_output is not None else ''
             print(f'{RED}Test {path.name} failed with output "{RESET}{out}{RED}" instead of "{RESET}{expect}{RED}"{RESET}')
 

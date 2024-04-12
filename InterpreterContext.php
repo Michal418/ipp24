@@ -2,6 +2,7 @@
 
 namespace IPP\Student;
 
+use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Exception\InterpreterRuntimeException;
