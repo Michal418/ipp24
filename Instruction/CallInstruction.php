@@ -32,9 +32,13 @@ class CallInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $pc = $context->findLabel($this->label);
+        $pc = $context->findLabel($this->label->getText());
         $context->callStack[] = $context->programCounter;
         $context->programCounter = $pc;
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->label}";
     }
 };
 

@@ -3,6 +3,7 @@
 namespace IPP\Student\Instruction;
 
 
+use IntlChar;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
@@ -33,10 +34,25 @@ class Int2CharInstruction extends Instruction {
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
         $value = $context->getSymbolValue($this->symb);
-        if (!is_int($value) || $value < 0 || $value > 255 /*1_114_111*/) {
+
+        if (is_object($value)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
+        }
+
+        if (!is_int($value)) {
+            $valueType = gettype($value);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for INT2CHAR: ($valueType) '$value'.");
+        }
+
+        if ($value < 0 || $value > 1_114_111) {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for INT2CHAR: $value.");
         }
-        $context->setVariable($this->var->getText(), chr($value));
+
+        $context->setVariable($this->var->getText(), IntlChar::chr($value));
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
 };
 

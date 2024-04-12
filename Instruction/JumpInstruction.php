@@ -29,5 +29,9 @@ class JumpInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $context->programCounter = $context->findLabel($this->label->getText());
     }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->label}";
+    }
 };
 

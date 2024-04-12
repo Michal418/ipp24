@@ -30,5 +30,9 @@ class LabelInstruction extends Instruction {
     public function getLabel() : string {
         return $this->label->getText();
     }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->label}";
+    }
 };
 

@@ -40,11 +40,22 @@ class AndInstruction extends Instruction {
         $frame = $context->getFrame($this->var->getText());
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
-        if (!is_bool($value1) || !is_bool($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for logical AND: $value1, $value2.");
+
+        if (is_object($value1) || is_object($value2)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
         }
+
+        if (!is_bool($value1) || !is_bool($value2)) {
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
+                                                  "Incompatible types for logical AND: $value1, $value2.");
+        }
+
         $varName = $context->getVariableName($this->var->getText());
         $context->selectFrame($frame)[$varName] = $value1 && $value2;
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 }
 

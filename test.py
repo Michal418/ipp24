@@ -4,7 +4,19 @@ import re
 
 RED = '\033[91m' #]
 BLUE = '\033[94m' #]
+LIGHT_BLUE = '\033[96m' #]
 RESET = '\033[0m' #]
+
+def escape(s: str) -> str:
+    result = ''
+
+    for ch in s:
+        if not ch.isprintable():
+            result += f'{LIGHT_BLUE}\\{ord(ch)}{RESET}'
+        else:
+            result += ch
+
+    return result
 
 def main():
     pattern = re.compile(r'(.*?).src$')
@@ -54,8 +66,8 @@ def main():
             print(f'{RED}Test {path.name} failed with return code {p.returncode} instead of {return_code}{RESET}')
 
         if not output_passed:
-            out = p.stdout.decode().replace('\n', '\\n')
-            expect = expected_output.replace('\n', '\\n') if expected_output is not None else ''
+            out = escape(p.stdout.decode())
+            expect = escape(expected_output) if expected_output is not None else ''
             print(f'{RED}Test {path.name} failed with output "{RESET}{out}{RED}" instead of "{RESET}{expect}{RED}"{RESET}')
 
 if __name__ == '__main__':

@@ -41,12 +41,29 @@ class GtInstruction extends Instruction {
         $frame = $context->getFrame($this->var->getText());
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
-        if (gettype($value1) !== gettype($value2) || is_bool($value1) || is_null($value1)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for comparison: $value1, $value2.");
-        }
         $varName = $context->getVariableName($this->var->getText());
 
-        $context->selectFrame($frame)[$varName] = $value1 > $value2;
+        if (is_object($value1) || is_object($value2)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
+        }
+        elseif (is_string($value1) && is_string($value2)) {
+            $result = strcmp($value1, $value2) > 0;
+        }
+        elseif (is_int($value1) && is_int($value2)) {
+            $result = $value1 > $value2;
+        }
+        elseif (is_bool($value1) && is_bool($value2)) {
+            $result = $value1 === true && $value2 === false;
+        }
+        else {
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for comparison: $value1, $value2.");
+        }
+
+        $context->selectFrame($frame)[$varName] = $result;
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 };
 

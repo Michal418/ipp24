@@ -33,11 +33,13 @@ class JumpIfNeqInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $value1 = $context->getSymbolValue($this->symb1);
-        $value2 = $context->getSymbolValue($this->symb2);
-        if ($value1 !== $value2) {
+        if (!$context->eq($this->symb1, $this->symb2)) {
             $context->programCounter = $context->findLabel($this->label->getText());
         }
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->label} {$this->symb1} {$this->symb2}";
     }
 };
 

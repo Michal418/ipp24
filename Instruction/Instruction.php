@@ -31,6 +31,8 @@ abstract class Instruction {
      * @throws InternalErrorException
      */
     abstract public function execute(InterpreterContext & $context, IO $io) : void;
+
+    abstract public function __toString() : string;
 }
 
 

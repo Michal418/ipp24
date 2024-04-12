@@ -30,11 +30,27 @@ class ExitInstruction extends Instruction {
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
         $exitCode = $context->getSymbolValue($this->symb);
-        if (!is_int($exitCode) || $exitCode < 0 || $exitCode > 9) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_VALUE_ERROR, "Invalid value for EXIT: $exitCode.");
+
+        if (is_object($exitCode)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
         }
+
+        if (!is_int($exitCode)) {
+            $exitType = gettype($exitCode);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for EXIT: ($exitType) '$exitCode'.");
+        }
+
+        if ($exitCode < 0 || $exitCode > 9) {
+            $exitType = gettype($exitCode);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_VALUE_ERROR, "Invalid value for EXIT: ($exitType) '$exitCode'.");
+        }
+
         $context->exitCode = $exitCode;
         $context->running = false;
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->symb}";
     }
 };
 

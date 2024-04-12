@@ -35,12 +35,11 @@ class EqInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $frame = $context->getFrame($this->var->getText());
         $varName = $context->getVariableName($this->var->getText());
-        $value1 = $context->getSymbolValue($this->symb1);
-        $value2 = $context->getSymbolValue($this->symb2);
-        if (gettype($value1) !== gettype($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for comparison: $value1, $value2.");
-        }
-        $context->selectFrame($frame)[$varName] = $value1 === $value2;
+        $context->selectFrame($frame)[$varName] = $context->eq($this->symb1, $this->symb2);
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 };
 

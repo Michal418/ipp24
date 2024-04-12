@@ -42,10 +42,21 @@ class TypeInstruction extends Instruction {
         elseif (is_string($value)) {
             $type = 'string';
         }
+        elseif (is_null($value)) {
+            $type = 'nil';
+        }
+        elseif (is_a($value, 'IPP\Student\Uninitialized')) {
+            $type = '';
+        }
         else {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Invalid type.");
+            $valueType = gettype($value);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: ($valueType) '$value'.");
         }
         $context->setVariable($this->var->getText(), $type);
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
 };
 

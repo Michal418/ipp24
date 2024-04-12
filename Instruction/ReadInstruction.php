@@ -38,9 +38,13 @@ class ReadInstruction extends Instruction {
             'int' => $io->readInt(),
             'bool' => $io->readBool(),
             'string' => $io->readString(),
-            default => throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Invalid type: '$t'"),
+            default => throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: '$t'"),
         };
         $context->setVariable($this->var->getText(), $value);
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->type}";
     }
 };
 

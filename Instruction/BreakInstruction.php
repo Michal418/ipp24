@@ -20,4 +20,8 @@ class BreakInstruction extends Instruction {
         $io->errString('Local frame: ' . print_r((!empty($this->frameStack)) ? $this->frameStack[0] : 'empty', true) . PHP_EOL);
         $io->errString('Temporary frame: ' . print_r($context->tempFrame, true) . PHP_EOL);
     }
+
+    public function __toString() : string {
+        return $this->getOpcode();
+    }
 }

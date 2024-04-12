@@ -7,6 +7,7 @@ use DOMElement;
 use InvalidArgumentException;
 use IPP\Core\AbstractInterpreter;
 use IPP\Core\Exception\InternalErrorException;
+use IPP\Core\ReturnCode;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\Exception\SourceStructureException;
 use IPP\Student\Instruction\Instruction;
@@ -37,8 +38,17 @@ class Interpreter extends AbstractInterpreter
         $io = new IO($this->input, $this->stdout, $this->stderr);
         $instructions = $this->readInstructions();
 
+//        foreach ($instructions as $instruction) {
+//            $io->writeString($instruction . PHP_EOL);
+//        }
+
         foreach ($instructions as $index => $instruction) {
             if (is_a($instruction, 'IPP\Student\Instruction\LabelInstruction')) {
+                if (array_key_exists($instruction->getLabel(), $context->labelCache)) {
+                    throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
+                        "Label redefinition: '{$instruction->getLabel()}'.");
+                }
+
                 $context->labelCache[$instruction->getLabel()] = $index;
             }
         }
@@ -63,8 +73,8 @@ class Interpreter extends AbstractInterpreter
 
         if (preg_match_all('/\\\\([0-9]{3})/', $str, $matches)) {
             foreach ($matches[1] as $match) {
-                $ival = intval($match);
-                $result = str_replace("\\$match", chr($ival), $result);
+                $intValue = intval($match);
+                $result = str_replace("\\$match", chr($intValue), $result);
             }
         }
 
@@ -82,12 +92,33 @@ class Interpreter extends AbstractInterpreter
          * @var Instruction[] $instructions
          */
         $instructions = [];
-        $previousOrder = -1;
+        $previousOrder = 0;
         $factory = new InstructionFactory();
 
-        foreach ($dom->getElementsByTagName('instruction') as $instructionNode) {
+        $root = $dom->getRootNode();
+        $children = $root->childNodes;
+
+        if (count($children) !== 1) {
+            throw new SourceStructureException('No program node or more than one program node.');
+        }
+
+        $programNode = $children[0];
+
+        if (!($programNode instanceof DOMElement) || $programNode->nodeName !== 'program') {
+            throw new SourceStructureException('Unexpected node');
+        }
+
+        if (!$programNode->hasAttribute('language') || $programNode->getAttribute('language') !== 'IPPcode24') {
+            throw new SourceStructureException("Bad language");
+        }
+
+        foreach ($programNode->childNodes as $instructionNode) {
             if (!($instructionNode instanceof DOMElement)) {
                 continue;
+            }
+
+            if ($instructionNode->nodeName !== 'instruction') {
+                throw new SourceStructureException('Unexpected node.');
             }
 
             if (!$instructionNode->hasAttribute('order') || !$instructionNode->hasAttribute('opcode')) {
@@ -111,10 +142,6 @@ class Interpreter extends AbstractInterpreter
                     continue;
                 }
 
-                if (!in_array($argumentNode->nodeName, ['arg1', 'arg2', 'arg3'])) {
-                    throw new SourceStructureException('Invalid argument.');
-                }
-
                 if (!$argumentNode->hasAttribute('type')) {
                     throw new SourceStructureException('Invalid argument.');
                 }
@@ -133,8 +160,26 @@ class Interpreter extends AbstractInterpreter
                     $text = $this->unescape($text);
                 }
 
-                $argument = new Argument($ipptype, $text);
-                $arguments[] = $argument;
+                $index = match ($argumentNode->nodeName) {
+                    'arg1' => 0,
+                    'arg2' => 1,
+                    'arg3' => 2,
+                    default => throw new SourceStructureException('Invalid argument.')
+                };
+
+                try {
+                    $argument = new Argument($ipptype, $text);
+                }
+                catch (InvalidArgumentException $ex) {
+                    throw new SourceStructureException($ex->getMessage());
+                }
+
+                $arguments[$index] = $argument;
+            }
+
+            if (array_key_exists(1, $arguments) && !array_key_exists(0, $arguments)
+            || array_key_exists(2, $arguments) && !array_key_exists(1, $arguments)) {
+                throw new SourceStructureException('Invalid argument.');
             }
 
             try {

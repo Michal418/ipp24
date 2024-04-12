@@ -36,4 +36,8 @@ class DprintInstruction extends Instruction {
         $value = $context->getSymbolValue($this->symb);
         $io->errString((string) $value);
     }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->symb}";
+    }
 }

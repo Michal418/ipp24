@@ -3,6 +3,7 @@
 namespace IPP\Student\Instruction;
 
 
+use IntlChar;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
@@ -36,10 +37,26 @@ class Str2IntInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $string = $context->getSymbolValue($this->symb1);
         $index = $context->getSymbolValue($this->symb2);
-        if (!is_string($string) || $index < 0 || $index >= strlen($string)) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for STR2INT: $string, $index.");
+
+        if (is_object($string) || is_object($index)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
         }
-        $context->setVariable($this->var->getText(), ord($string[$index]));
+
+        if (!is_string($string) || !is_int($index)) {
+            $stringType = gettype($string);
+            $indexType = gettype($index);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STR2INT: ($stringType) '$string', ($indexType) '$index'.");
+        }
+
+        if ($index < 0 || $index >= strlen($string)) {
+            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for STR2INT: '$string', '$index'.");
+        }
+
+        $context->setVariable($this->var->getText(), IntlChar::ord($string[$index]));
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 };
 

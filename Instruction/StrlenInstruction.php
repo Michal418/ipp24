@@ -33,10 +33,21 @@ class StrlenInstruction extends Instruction {
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
         $value = $context->getSymbolValue($this->symb);
-        if (!is_string($value)) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for STRLEN: $value.");
+
+        if (is_object($value)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
         }
+
+        if (!is_string($value)) {
+            $valueType = gettype($value);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STRLEN: ($valueType) '$value'.");
+        }
+
         $context->setVariable($this->var->getText(), strlen($value));
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
 };
 

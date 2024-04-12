@@ -39,6 +39,25 @@ class InterpreterContext
     public int $exitCode = 0;
 
     /**
+     * @throws InterpreterRuntimeException
+     * @throws InternalErrorException
+     */
+    public function eq(Argument $symb1, Argument $symb2) : bool {
+        $value1 = $this->getSymbolValue($symb1);
+        $value2 = $this->getSymbolValue($symb2);
+
+        if (is_object($value1) || is_object($value2)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
+        }
+
+        if  (gettype($value1) !== gettype($value2) && !is_null($value1) && !is_null($value2)) {
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for comparison: $value1, $value2.");
+        }
+
+        return $value1 === $value2;
+    }
+
+    /**
      * @brief Vrátí hodnotu literálu.
      * @param string $symbol
      * @param IPPType $ipptype
@@ -115,7 +134,7 @@ class InterpreterContext
             if (empty($this->frameStack)) {
                 throw new InterpreterRuntimeException(ReturnCode::FRAME_ACCESS_ERROR, "Frame stack is empty.");
             }
-            return $this->frameStack[0];
+            return $this->frameStack[count($this->frameStack) - 1];
         }
         elseif ($framename === 'GF') {
             return $this->globalFrame;

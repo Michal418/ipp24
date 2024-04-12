@@ -47,5 +47,9 @@ class WriteInstruction extends Instruction {
             throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Uninitialized variable used in WRITE: $value");
         }
     }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->symb}";
+    }
 }
 

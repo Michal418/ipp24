@@ -30,5 +30,9 @@ class DefvarInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $context->defvar($this->var->getText());
     }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var}";
+    }
 };
 

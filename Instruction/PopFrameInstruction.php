@@ -19,5 +19,9 @@ class PopFrameInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $context->popFrame();
     }
+
+    public function __toString() : string {
+        return $this->getOpcode();
+    }
 };
 

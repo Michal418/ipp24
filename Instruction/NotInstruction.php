@@ -29,11 +29,21 @@ class NotInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $frame = $context->getFrame($this->var->getText());
         $value = $context->getSymbolValue($this->symb);
+
+        if (is_object($value) ) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+        }
+
         if (!is_bool($value)) {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible type for logical NOT: $value.");
         }
+
         $varName = $context->getVariableName($this->var->getText());
         $context->selectFrame($frame)[$varName] = !$value;
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
 };
 

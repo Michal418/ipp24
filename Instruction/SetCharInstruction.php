@@ -36,11 +36,32 @@ class SetCharInstruction extends Instruction {
         $string = $context->getSymbolValue($this->var);
         $index = $context->getSymbolValue($this->symb1);
         $char = $context->getSymbolValue($this->symb2);
-        if (!is_string($string) || !is_int($index) || $index < 0 || $index >= strlen($string) || !is_string($char) || strlen($char) !== 1) {
+
+        if (is_object($string) || is_object($index) || is_object($char)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+        }
+
+        if (!is_string($string) || !is_int($index) || !is_string($char)) {
+            $stringTYpe = gettype($string);
+            $indexType = gettype($index);
+            $charType = gettype($char);
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for SETCHAR: ($stringTYpe) '$string', ($indexType) '$index', ($charType) '$char'.");
+        }
+
+        if ($index < 0 || $index >= strlen($string)) {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for SETCHAR: $string, $index, $char.");
         }
+
+        if (strlen($char) > 1) {
+            $char = $char[0];
+        }
+
         $string[$index] = $char;
         $context->setVariable($this->var->getText(), $string);
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 };
 

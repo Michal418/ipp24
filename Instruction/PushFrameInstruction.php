@@ -23,5 +23,9 @@ class PushFrameInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $context->pushFrame();
     }
+
+    public function __toString() : string {
+        return $this->getOpcode();
+    }
 };
 

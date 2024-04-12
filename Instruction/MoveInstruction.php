@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\Interface\InputReader;
 use IPP\Core\Interface\OutputWriter;
+use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\Interpreter;
@@ -35,7 +36,18 @@ class MoveInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $context->setVariable($this->var->getText(), $context->getSymbolValue($this->symb));
+        $value = $context->getSymbolValue($this->symb);
+
+        if (is_object($value)) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+        }
+
+        $context->setVariable($this->var->getText(), $value);
+    }
+
+    public function __toString() : string {
+        return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
 };
+
 

@@ -25,6 +25,10 @@ class ReturnInstruction extends Instruction {
 
         $context->programCounter = $result;
     }
+
+    public function __toString() : string {
+        return $this->getOpcode();
+    }
 };
 
 
