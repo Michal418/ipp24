@@ -16,43 +16,53 @@
 
 \section{Návrh}
 
-Dle zadání je řešení ve třídě \texttt{Interpret}, které implementuje abstraktní třídu \texttt{AbstractInterpret}.
-Přetížená metoda \texttt{parseXml} zpracuje vstupní XML soubor a vytvoří interní reprezentaci kódu.
+Pro každou instrukci je definovaná třída, která dědí z abstraktní třídy \texttt{Instruction} a implementuje metodu \texttt{execute}. Interpret má seznam instrukcí a pro každou volá její metodu \texttt{execute}, které předá objekty typu \texttt{InterpreterContext} a \texttt{IO}. \texttt{InterpreterContext} obsahuje informace o stavu interpretu včetně datových rámců, datového zásobníku a zásobníku volání. \texttt{IO} umožňuje číst ze standardního vstupu a vypisovat na standardní a chybový výstup.
 
-
-Interní reprezentace kódu je tvořena seznamem objektů třídy \texttt{Instruction}. Každý objekt instrukce obsahuje operační kód, pořadí a seznam argumentů typu \texttt{Argument}. Třída argument obsahuje typ argumentu a jeho text.
-Text má odstraněné bílé znaky na začátku a na konci escape sekvence jsou převedeny na odpovídající znaky.
-Dál argument zatím není zpracován a je uložen jako řetězec.
-
-
-Data která reprezentují stav interpretu jsou členy třídy \texttt{Interpret}. Obsahují dočasný rámec,
-globální rámec, zásobník lokálních ramáců, zásobník volání, datový zásobník, čítač instrukcí a tabulku návěští.
-Dále \texttt{Interpret} obsahuje pomocné metody, které jsou volány z metody \texttt{execute}.
-
-
-Výjimky jsou ošetřeny vyvoláním výjimky tříd dědících ze třídy \texttt{IPPException}.
-Kromě výjimek z rámce ipp core jsou implementoval třídy \texttt{InterpretRuntimeException} a \texttt{SourceStructureException}.
-Třída \texttt{InterpretRuntimeException} je vyvolána při běhu interpretu při chybách 51 až 58.
-Třída \texttt{SourceStructureException} je vyvolána při zpracování XML souboru s kódem 32.
+Hodnoty jsou reprezentovány třídou \texttt{Value}. Ta uchovává informaci o tom, jestli je hodnota inicializovaná a hodnotu, která může nabývat více typů. Dále má metody pro bezpečnou práci s těmito typově dynamickými hodnotami.
 
 \section{Implementace}
 
-Metoda \texttt{execute} volá metody \texttt{getDOMDocument} z rámce ipp core a výsledek předává metodě \texttt{parseXml}.
-Metoda \texttt{parseXml} zkontroluje správnost vstupního souboru a vytvoří interní reprezentaci kódu.
-Vykonávání instrukcí je implementování pomocí čítače instrukcí, smyčky která běží dokud není čítač instrukcí na konci seznamu instrukcí nebo dokud nebyl program ukončen instrukcí EXIT nebo dokud nenastane sémantická chyba.
-Uvnitř smyčky je posloupnost if - elseif příkazů, která podle operačního kódu provede příslušnou instrukci.
-Při vykonávání instrukcí jsou použity pomocné metody třídy \texttt{Interpret}.
-Metoda \texttt{selectFrame} vybere rámec podle jeho názvu.
-Metoda \texttt{getSymbolValue} vrátí hodnotu proměnné nebo literálu.
-\texttt{setVariable} nastaví hodnotu proměnné ve správném datovém rámci.
-Metoda \texttt{unescape} převede escape sekvence na odpovídající znaky.
-\texttt{parseLiteral} zpracuje literál a vrátí jeho hodnotu.
-\texttt{getFrame} vrátí rámec podle jeho názvu.
-Metoda \texttt{getVariableName} vrátí název proměnné bez rámce a znaku @.
+\subsection{\texttt{Instruction}}
+
+Instrukce má \texttt{opcode}, ke které zle přistupovat pomocí metody \texttt{getOpcode}. Podtřídy mají argumenty typu \texttt{Argument}, která uchovávají typ argumentu a jeho text, přesně ve tvaru, ve kterém byl přečten ze vstupního XML souboru.
+
+\subsection{\texttt{Argument}}
+
+Objekty tohoto typu uchovávaní enum \texttt{IPPType} reprezentující typ argumentu a text argumentu. Text je uložen v původním tvaru, ve kterém byl přečten ze vstupního XML souboru.
+
+\subsection{\texttt{InstructionFactory}}
+
+Třída \texttt{InstructionFactory} implementuje metodu \texttt{create}, která vytvoří instanci instrukce podle zadaného \texttt{opcode} a pole argumentů.
+
+\subsection{\texttt{InterpreterContext}}
+
+Třída \texttt{InterpreterContext} uchovává informace o stavu interpretu. Obsahuje datové rámce, datový zásobník, zásobník volání, informaci o tom, jestli má vykonávání instrukcí pokračovat a kód chyby, který se má vrátit. Obsahuje metody pro práci s těmito daty.
+
+\subsection{\texttt{IO}}
+
+Třída \texttt{IO} zapouzdřuje \texttt{InputReader} a \texttt{OutputWriter} z \textit{ipp-core}.
+
+\subsection{\texttt{Frame}}
+
+\texttt{Frame} reprezentuje datový rámec. Informace o symbolech uchovává v asociativním poli, které mapuje řetězce na \texttt{Value}. Metody umožňují definici proměnné, přiřazení a získání její hodnoty.
+
+\subsection{\texttt{Value}}
+
+Objekty typu \texttt{Value} uchovávají logickou hodnotu, která uruje, zda je hodnota inicializovaná, a hodnotu, která může být typu \texttt{int}, \texttt{bool}, \texttt{string} nebo \texttt{null} (\texttt{null} reprezentuje \texttt{nil} jazyka \texttt{IPPcode24}). Implementuje metody pro aritmetické, logické a řetězcové operace, pro kontrolu dynamického typu a pro nastavení a získání hodnoty.
+
+\subsection{\texttt{Interpreter}}
+
+Třída \texttt{Interpreter} implementuje metodu \texttt{execute}. Ta nejdřív zavolá soukromou funkci \texttt{parseXML}, která načte XML soubor a vytvoří seznam instrukcí. Poté vytvoří instanci \texttt{InterpreterContext} a \texttt{IO} a pro každou instrukci zavolá její metodu \texttt{execute}. Proměnná \texttt{programCounter} určuje index instrukce, která se má vykonat. Po vykonání každé instrukce se \texttt{programCounter} inkrementuje a skokové instrukce mohou tuto hodnotu změnit.
+
+\subsection{Výjimky}
+
+Pro každý typ chyby je definování výjimka dědící z \texttt{IPPException}.
+
+\vspace{6em}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.75\textwidth]{diagram.png}
+  \includegraphics[width=\textwidth]{diagram.png}
   \caption{Diagram tříd.}
   \label{fig:diagram}
 \end{figure}

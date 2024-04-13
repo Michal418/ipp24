@@ -5,7 +5,7 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\SemanticErrorException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -25,8 +25,7 @@ class CallInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
-     * @throws InterpreterRuntimeException
+     * @throws SemanticErrorException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

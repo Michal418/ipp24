@@ -2,7 +2,7 @@
 
 namespace IPP\Student\Instruction;
 
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\ValueException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 
@@ -14,7 +14,7 @@ class ReturnInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

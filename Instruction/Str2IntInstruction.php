@@ -7,7 +7,10 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\StringOperationException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -32,8 +35,13 @@ class Str2IntInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @param InterpreterContext $context
+     * @param IO $io
      * @throws InternalErrorException
+     * @throws StringOperationException
+     * @throws FrameAccessException
+     * @throws ValueException
+     * @throws VariableAccessException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {
@@ -42,8 +50,7 @@ class Str2IntInstruction extends Instruction
 
         $len = mb_strlen($string, encoding: 'UTF-8');
         if ($index < 0 || $index >= $len) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR,
-                "Invalid index for STR2INT: string='$string' of len $len, index='$index'.");
+            throw new StringOperationException("Invalid index for STR2INT: string='$string' of len $len, index='$index'.");
         }
 
         $mbChar = mb_substr($string, $index, 1, encoding: 'UTF-8');

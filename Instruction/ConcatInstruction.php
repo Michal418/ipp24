@@ -5,7 +5,9 @@ namespace IPP\Student\Instruction;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -30,8 +32,10 @@ class ConcatInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws VariableAccessException
      * @throws InternalErrorException
+     * @throws ValueException
+     * @throws FrameAccessException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

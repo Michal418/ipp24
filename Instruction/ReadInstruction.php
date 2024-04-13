@@ -7,7 +7,10 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
+use IPP\Student\Exception\FrameAccessException;
 use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\TypeException;
+use IPP\Student\Exception\ValueException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -30,8 +33,12 @@ class ReadInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @param InterpreterContext $context
+     * @param IO $io
      * @throws InternalErrorException
+     * @throws TypeException
+     * @throws FrameAccessException
+     * @throws ValueException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {
@@ -41,7 +48,7 @@ class ReadInstruction extends Instruction
             'int' => $io->readInt(),
             'bool' => $io->readBool(),
             'string' => $io->readString(),
-            default => throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: '$t'"),
+            default => throw new TypeException("Invalid type: '$t'"),
         };
 
         $context->setVariable($this->var->getText(), new Value(true, $value));

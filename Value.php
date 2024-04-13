@@ -3,7 +3,9 @@
 namespace IPP\Student;
 
 use IPP\Core\ReturnCode;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\OperandValueException;
+use IPP\Student\Exception\TypeException;
+use IPP\Student\Exception\ValueException;
 
 class Value
 {
@@ -42,57 +44,57 @@ class Value
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws TypeException
+     * @throws ValueException
      */
     public function getString(): string
     {
         $result = $this->data;
 
         if (!$this->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value.');
+            throw new ValueException('Attempt to read uninitialized value.');
         }
 
         if (!is_string($result)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "$this is not string.");
+            throw new TypeException("$this is not string.");
         }
 
         return $result;
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function getInt(): int
     {
         $result = $this->data;
 
         if (!$this->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value.');
+            throw new ValueException('Attempt to read uninitialized value.');
         }
 
         if (!is_int($result)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "$this is not int.");
+            throw new TypeException("$this is not int.");
         }
 
         return $result;
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function getBool(): bool
     {
         $result = $this->data;
 
         if (!$this->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value.');
+            throw new ValueException('Attempt to read uninitialized value.');
         }
 
         if (!is_bool($result)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "$this is not int.");
+            throw new TypeException("$this is not int.");
         }
 
         return $result;
@@ -110,18 +112,17 @@ class Value
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function add(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         if (!is_int($this->data) || !is_int($other->data)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for addition: $this, $other.");
+            throw new TypeException("Incompatible types for addition: $this, $other.");
 
         }
 
@@ -129,64 +130,62 @@ class Value
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function and(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         if (!is_bool($this->data) || !is_bool($other->data)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for AND: $this, $other.");
+            throw new TypeException("Incompatible types for AND: $this, $other.");
         }
 
         return new Value(true, $this->data && $other->data);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function concat(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         $value1 = $this->getValue();
         $value2 = $other->getValue();
 
         if (!is_string($value1) || !is_string($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for CONCAT: $this, $other.");
+            throw new TypeException("Incompatible types for CONCAT: $this, $other.");
         }
 
         return new Value(true, $value1 . $value2);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function getValue(): int|string|bool|null
     {
         if (!$this->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+            throw new ValueException('Attempt to read uninitialized value');
         }
 
         return $this->data;
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function gt(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         $value1 = $this->getValue();
@@ -199,66 +198,65 @@ class Value
         } elseif (is_bool($value1) && is_bool($value2)) {
             $result = $value1 === true && $value2 === false;
         } else {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for comparison: $this, $other.");
+            throw new TypeException("Incompatible types for comparison: $this, $other.");
         }
 
         return new Value(true, $result);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws TypeException
+     * @throws ValueException
+     * @throws OperandValueException
      */
     public function div(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         $value1 = $this->getValue();
         $value2 = $other->getValue();
 
         if (!is_int($value1) || !is_int($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for division: $value1, $value2.");
+            throw new TypeException("Incompatible types for division: $value1, $value2.");
         }
 
         if ($value2 === 0) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_VALUE_ERROR, "Incompatible value for division: $value1, $value2.");
+            throw new OperandValueException("Incompatible value for division: $value1, $value2.");
         }
 
         return new Value(true, $value1 / $value2);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function eq(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         $value1 = $this->getValue();
         $value2 = $other->getValue();
 
         if (gettype($value1) !== gettype($value2) && !is_null($value1) && !is_null($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for comparison: $this, $other.");
+            throw new TypeException("Incompatible types for comparison: $this, $other.");
         }
 
         return new Value(true, $value1 === $value2);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function lt(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         $value1 = $this->getValue();
@@ -271,69 +269,66 @@ class Value
         } elseif (is_bool($value1) && is_bool($value2)) {
             $result = $value1 === false && $value2 === true;
         } else {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for comparison: $this, $other.");
+            throw new TypeException("Incompatible types for comparison: $this, $other.");
         }
 
         return new Value(true, $result);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function not(): Value
     {
         if (!$this->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value');
+            throw new ValueException('Attempt to read uninitialized value');
         }
 
         $value = $this->getValue();
 
         if (!is_bool($value)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible type for logical NOT: $this.");
+            throw new TypeException("Incompatible type for logical NOT: $this.");
         }
 
         return new Value(true, !$value);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function or(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value');
+            throw new ValueException('Attempt to read uninitialized value');
         }
 
         $value1 = $this->getValue();
         $value2 = $other->getValue();
 
         if (!is_bool($value1) || !is_bool($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for logical OR: $this, $other.");
+            throw new TypeException("Incompatible types for logical OR: $this, $other.");
         }
 
         return new Value(true, $value1 || $value2);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws TypeException
      */
     public function sub(Value $other): Value
     {
         if (!$this->isInitialized() || !$other->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+            throw new ValueException('Attempt to read uninitialized value');
         }
 
         $value1 = $this->getValue();
         $value2 = $other->getValue();
 
         if (!is_int($value1) || !is_int($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
-                "Incompatible types for subtraction: $this, $$other.");
+            throw new TypeException("Incompatible types for subtraction: $this, $$other.");
         }
 
         return new Value(true, $value1 - $value2);

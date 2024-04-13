@@ -3,7 +3,7 @@
 namespace IPP\Student\Instruction;
 
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Core\Exception\IPPException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 
@@ -28,8 +28,7 @@ abstract class Instruction
      * @param InterpreterContext $context
      * @param IO $io
      * @return void
-     * @throws InterpreterRuntimeException
-     * @throws InternalErrorException
+     * @throws IPPException
      */
     abstract public function execute(InterpreterContext &$context, IO $io): void;
 

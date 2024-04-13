@@ -2,8 +2,7 @@
 
 namespace IPP\Student;
 
-use IPP\Core\ReturnCode;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\ValueException;
 
 class Frame
 {
@@ -13,36 +12,36 @@ class Frame
     private array $data = [];
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function defineSymbol(string $name): void
     {
         if (array_key_exists($name, $this->data)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Double declaration of '$$name'.");
+            throw new ValueException("Double declaration of '$$name'.");
         }
 
         $this->data[$name] = new Value(false);
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function setSymbol(string $name, Value $value): void
     {
         if (!array_key_exists($name, $this->data)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read undefined symbol '$name'.");
+            throw new ValueException("Attempt to read undefined symbol '$name'.");
         }
 
         $this->data[$name] = $value;
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function getSymbolValue(string $name): Value
     {
         if (!array_key_exists($name, $this->data)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read undefined symbol '$name'.");
+            throw new ValueException("Attempt to read undefined symbol '$name'.");
         }
 
         return $this->data[$name];

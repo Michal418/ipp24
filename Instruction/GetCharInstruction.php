@@ -7,7 +7,10 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\StringOperationException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -33,8 +36,11 @@ class GetCharInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
      * @throws InternalErrorException
+     * @throws StringOperationException
+     * @throws VariableAccessException
+     * @throws ValueException
+     * @throws FrameAccessException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {
@@ -42,7 +48,7 @@ class GetCharInstruction extends Instruction
         $index = $context->getSymbolValue($this->symb2)->getInt();
 
         if ($index < 0 || $index >= mb_strlen($string, encoding: 'UTF-8')) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid index for GETCHAR: $string, $index.");
+            throw new StringOperationException("Invalid index for GETCHAR: $string, $index.");
         }
 
         $char = mb_substr($string, $index, 1, encoding: 'UTF-8');

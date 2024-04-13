@@ -5,7 +5,8 @@ namespace IPP\Student\Instruction;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\ValueException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -25,8 +26,9 @@ class PopsInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
      * @throws InternalErrorException
+     * @throws ValueException
+     * @throws FrameAccessException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

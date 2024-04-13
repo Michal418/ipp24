@@ -6,7 +6,11 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
+use IPP\Student\Exception\FrameAccessException;
 use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\TypeException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -31,7 +35,10 @@ class AddInstruction extends Instruction
 
     /**
      * @throws InternalErrorException
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
+     * @throws VariableAccessException
+     * @throws FrameAccessException
+     * @throws TypeException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {
@@ -39,11 +46,11 @@ class AddInstruction extends Instruction
         $value2 = $context->getSymbolValue($this->symb2);
 
         if (!$value1->isInitialized() || !$value2->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
+            throw new ValueException("Attempt to read uninitialized value");
         }
 
         if (!is_int($value1->getValue()) || !is_int($value2->getValue())) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for addition: $value1, $value2.");
+            throw new TypeException("Incompatible types for addition: $value1, $value2.");
         }
 
         $context->setVariable($this->var->getText(), $value1->add($value2));

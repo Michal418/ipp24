@@ -7,7 +7,11 @@ use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\OperandValueException;
+use IPP\Student\Exception\TypeException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -32,8 +36,14 @@ class MulInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @param InterpreterContext $context
+     * @param IO $io
      * @throws InternalErrorException
+     * @throws FrameAccessException
+     * @throws ValueException
+     * @throws VariableAccessException
+     * @throws OperandValueException
+     * @throws TypeException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {
@@ -41,15 +51,14 @@ class MulInstruction extends Instruction
         $symb2 = $context->getSymbolValue($this->symb2);
 
         if (!$symb1->isInitialized() || !$symb2->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
-                'Attempt to read uninitialized value');
+            throw new ValueException('Attempt to read uninitialized value');
         }
 
         $value1 = $symb1->getValue();
         $value2 = $symb2->getValue();
 
         if (!is_int($value1) || !is_int($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for multiplication: $value1, $value2.");
+            throw new TypeException("Incompatible types for multiplication: $value1, $value2.");
         }
 
         $context->setVariable($this->var->getText(), new Value(true, $value1 * $value2));

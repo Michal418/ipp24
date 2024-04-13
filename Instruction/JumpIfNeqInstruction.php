@@ -6,7 +6,7 @@ namespace IPP\Student\Instruction;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\SemanticErrorException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
@@ -30,8 +30,10 @@ class JumpIfNeqInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @param InterpreterContext $context
+     * @param IO $io
      * @throws InternalErrorException
+     * @throws SemanticErrorException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

@@ -4,7 +4,10 @@ namespace IPP\Student;
 
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
+use IPP\Student\Exception\SemanticErrorException;
+use IPP\Student\Exception\ValueException;
+use IPP\Student\Exception\VariableAccessException;
 use IPP\Student\Instruction\Instruction;
 
 class InterpreterContext
@@ -55,12 +58,12 @@ class InterpreterContext
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function popStack(): Value
     {
         if (empty($this->stack)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Stack is empty.");
+            throw new ValueException("Stack is empty.");
         }
 
         return array_pop($this->stack);
@@ -77,12 +80,12 @@ class InterpreterContext
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function popCallStack(): int
     {
         if (empty($this->callStack)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Call stack is empty.");
+            throw new ValueException("Call stack is empty.");
         }
         return array_pop($this->callStack);
     }
@@ -126,7 +129,7 @@ class InterpreterContext
      *
      * Inicializuje tabulku, která mapuje názvy návěstí na index instrukce
      * @param Instruction[] $instructions
-     * @throws InterpreterRuntimeException
+     * @throws SemanticErrorException
      */
     public function initializeLabelMap(array $instructions): void
     {
@@ -136,8 +139,7 @@ class InterpreterContext
             }
 
             if (array_key_exists($instruction->getLabel(), $this->labelMap)) {
-                throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
-                    "Label redefinition: '{$instruction->getLabel()}'.");
+                throw new SemanticErrorException("Label redefinition: '{$instruction->getLabel()}'.");
             }
 
             $this->labelMap[$instruction->getLabel()] = $index;
@@ -145,7 +147,6 @@ class InterpreterContext
     }
 
     /**
-     * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
     public function eq(Argument $symb1, Argument $symb2): bool
@@ -157,8 +158,7 @@ class InterpreterContext
         $value = $result->getValue();
 
         if (!is_bool($value)) {
-            throw new InterpreterRuntimeException(ReturnCode::INTERNAL_ERROR,
-                'This code should be unreachable');
+            throw new InternalErrorException('This code should be unreachable');
         }
 
         return $value;
@@ -168,8 +168,9 @@ class InterpreterContext
      * @brief Vrátí hodnotu proměnné nebo konstanty.
      * @param Argument $symbol
      * @return Value
+     * @throws VariableAccessException
      * @throws InternalErrorException
-     * @throws InterpreterRuntimeException
+     * @throws ValueException
      */
     public function getSymbolValue(Argument $symbol): Value
     {
@@ -179,8 +180,7 @@ class InterpreterContext
             $varName = $this->getVariableName($varCode);
 
             if (!$this->selectFrame($frame)->isSymbolDefined($varName)) {
-                throw new InterpreterRuntimeException(ReturnCode::VARIABLE_ACCESS_ERROR,
-                    "Variable '$varName' is not defined in frame '$frame'.");
+                throw new VariableAccessException("Variable '$varName' is not defined in frame '$frame'.");
             }
 
             return $this->selectFrame($frame)->getSymbolValue($varName);
@@ -224,21 +224,20 @@ class InterpreterContext
      * @param string $framename
      * @return Frame
      * @throws InternalErrorException
-     * @throws InterpreterRuntimeException
+     * @throws FrameAccessException
      */
     public function &selectFrame(string $framename): Frame
     {
         if ($framename === 'LF') {
             if (empty($this->frameStack)) {
-                throw new InterpreterRuntimeException(ReturnCode::FRAME_ACCESS_ERROR, "Frame stack is empty.");
+                throw new FrameAccessException("Frame stack is empty.");
             }
             return $this->frameStack[count($this->frameStack) - 1];
         } elseif ($framename === 'GF') {
             return $this->globalFrame;
         } elseif ($framename === 'TF') {
             if (is_null($this->tempFrame)) {
-                throw new InterpreterRuntimeException(ReturnCode::FRAME_ACCESS_ERROR,
-                    "Temporary frame is null.");
+                throw new FrameAccessException("Temporary frame is null.");
             }
             return $this->tempFrame;
         } else {
@@ -250,6 +249,7 @@ class InterpreterContext
      * @brief Vrátí hodnotu literálu.
      * @param string $symbol
      * @param IPPType $ipptype
+     * @return Value
      * @throws InternalErrorException
      */
     public static function parseLiteral(string $symbol, IPPType $ipptype): Value
@@ -284,21 +284,23 @@ class InterpreterContext
     /**
      * @brief Nastaví hodnotu proměnné.
      * @param string $varCode
-     * @throws InterpreterRuntimeException
+     * @param Value $value
+     * @throws FrameAccessException
      * @throws InternalErrorException
+     * @throws ValueException
+     * @throws VariableAccessException
      */
     public function setVariable(string $varCode, Value $value): void
     {
         if (!$value->isInitialized()) {
-            throw new InterpreterRuntimeException(ReturnCode::INTERNAL_ERROR, "Cannot set variable to uninitialized value.");
+            throw new InternalErrorException("Cannot set variable to uninitialized value.");
         }
 
         $frame = $this->getFrame($varCode);
         $varName = $this->getVariableName($varCode);
 
         if (!$this->selectFrame($frame)->isSymbolDefined($varName)) {
-            throw new InterpreterRuntimeException(ReturnCode::VARIABLE_ACCESS_ERROR,
-                "Variable '$varName' is not defined in frame '$frame'.");
+            throw new VariableAccessException("Variable '$varName' is not defined in frame '$frame'.");
         }
 
         $this->selectFrame($frame)->setSymbol($varName, $value);
@@ -306,7 +308,9 @@ class InterpreterContext
 
     /**
      * @throws InternalErrorException
-     * @throws InterpreterRuntimeException
+     * @throws FrameAccessException
+     * @throws ValueException
+     * @throws SemanticErrorException
      */
     public function defvar(string $varCode): void
     {
@@ -314,8 +318,7 @@ class InterpreterContext
         $frame = $this->getFrame($varCode);
 
         if ($this->selectFrame($frame)->isSymbolDefined($varName)) {
-            throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
-                "Variable '$varCode' already defined.");
+            throw new SemanticErrorException("Variable '$varCode' already defined.");
         }
 
         $frame = $this->getFrame($varCode);
@@ -325,12 +328,12 @@ class InterpreterContext
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws FrameAccessException
      */
     public function pushframe(): void
     {
         if (is_null($this->tempFrame)) {
-            throw new InterpreterRuntimeException(ReturnCode::FRAME_ACCESS_ERROR, "Temporary frame is null.");
+            throw new FrameAccessException("Temporary frame is null.");
         }
         $this->frameStack[] = $this->tempFrame;
         $this->tempFrame = null;
@@ -342,12 +345,12 @@ class InterpreterContext
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws FrameAccessException
      */
     public function popframe(): void
     {
         if (empty($this->frameStack)) {
-            throw new InterpreterRuntimeException(ReturnCode::FRAME_ACCESS_ERROR, "Frame stack is empty.");
+            throw new FrameAccessException("Frame stack is empty.");
         }
         $this->tempFrame = array_pop($this->frameStack);
     }
@@ -356,7 +359,7 @@ class InterpreterContext
      * @brief Najde index instrukce podle návěští.
      * @param string $label
      * @return int
-     * @throws InterpreterRuntimeException
+     * @throws SemanticErrorException
      */
     public function findLabel(string $label): int
     {
@@ -364,6 +367,6 @@ class InterpreterContext
             return $this->labelMap[$label];
         }
 
-        throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR, "Label '$label' not found.");
+        throw new SemanticErrorException("Label '$label' not found.");
     }
 }

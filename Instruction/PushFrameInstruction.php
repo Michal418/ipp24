@@ -3,7 +3,7 @@
 namespace IPP\Student\Instruction;
 
 
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\FrameAccessException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 
@@ -15,7 +15,7 @@ class PushFrameInstruction extends Instruction
     }
 
     /**
-     * @throws InterpreterRuntimeException
+     * @throws FrameAccessException
      */
     public function execute(InterpreterContext &$context, IO $io): void
     {

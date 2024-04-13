@@ -7,8 +7,9 @@ use DOMElement;
 use InvalidArgumentException;
 use IPP\Core\AbstractInterpreter;
 use IPP\Core\Exception\InternalErrorException;
+use IPP\Core\Exception\IPPException;
 use IPP\Core\ReturnCode;
-use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Exception\SemanticErrorException;
 use IPP\Student\Exception\SourceStructureException;
 use IPP\Student\Instruction\Instruction;
 
@@ -19,9 +20,8 @@ use IPP\Student\Instruction\Instruction;
 class Interpreter extends AbstractInterpreter
 {
     /**
-     * @throws SourceStructureException
-     * @throws InterpreterRuntimeException
-     * @throws InternalErrorException
+     * @return int
+     * @throws IPPException
      */
     public function execute(): int
     {
@@ -119,7 +119,7 @@ class Interpreter extends AbstractInterpreter
                 try {
                     $ipptype = IPPType::fromString($ipptypeStr);
                 } catch (InvalidArgumentException $ex) {
-                    throw new SourceStructureException($ex->getMessage());
+                    throw new SourceStructureException('Invalid type string', $ex);
                 }
 
                 $text = trim($argumentNode->textContent);
@@ -138,7 +138,7 @@ class Interpreter extends AbstractInterpreter
                 try {
                     $argument = new Argument($ipptype, $text);
                 } catch (InvalidArgumentException $ex) {
-                    throw new SourceStructureException($ex->getMessage());
+                    throw new SourceStructureException('Could not construct argument', $ex);
                 }
 
                 $arguments[$index] = $argument;
@@ -152,7 +152,7 @@ class Interpreter extends AbstractInterpreter
             try {
                 $instruction = $factory->create($opcode, $arguments);
             } catch (InvalidArgumentException $ex) {
-                throw new SourceStructureException($ex->getMessage());
+                throw new SourceStructureException('Could not create instruction', $ex);
             }
 
             $instructions[] = $instruction;
