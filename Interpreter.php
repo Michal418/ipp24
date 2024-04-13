@@ -28,21 +28,7 @@ class Interpreter extends AbstractInterpreter
         $context = new InterpreterContext();
         $io = new IO($this->input, $this->stdout, $this->stderr);
         $instructions = $this->readInstructions();
-
-//        foreach ($instructions as $instruction) {
-//            $io->writeString($instruction . PHP_EOL);
-//        }
-
-        foreach ($instructions as $index => $instruction) {
-            if (is_a($instruction, 'IPP\Student\Instruction\LabelInstruction')) {
-                if (array_key_exists($instruction->getLabel(), $context->getLabelMap())) {
-                    throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
-                        "Label redefinition: '{$instruction->getLabel()}'.");
-                }
-
-                $context->getLabelMap()[$instruction->getLabel()] = $index;
-            }
-        }
+        $context->initializeLabelMap($instructions);
 
         $instructionCount = count($instructions);
         while ($context->isRunning() && $context->getProgramCounter() < $instructionCount) {

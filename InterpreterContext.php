@@ -5,6 +5,7 @@ namespace IPP\Student;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
 use IPP\Student\Exception\InterpreterRuntimeException;
+use IPP\Student\Instruction\Instruction;
 
 class InterpreterContext
 {
@@ -41,14 +42,6 @@ class InterpreterContext
     public function __construct()
     {
         $this->globalFrame = new Frame();
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    public function & getLabelMap(): array
-    {
-        return $this->labelMap;
     }
 
     public function & getTemporaryFrame(): ?Frame
@@ -130,6 +123,28 @@ class InterpreterContext
     }
 
     /**
+     *
+     * Inicializuje tabulku, která mapuje názvy návěstí na index instrukce
+     * @param Instruction[] $instructions
+     * @throws InterpreterRuntimeException
+     */
+    public function initializeLabelMap(array $instructions): void
+    {
+        foreach ($instructions as $index => $instruction) {
+            if (!is_a($instruction, 'IPP\Student\Instruction\LabelInstruction')) {
+                continue;
+            }
+
+            if (array_key_exists($instruction->getLabel(), $this->labelMap)) {
+                throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
+                    "Label redefinition: '{$instruction->getLabel()}'.");
+            }
+
+            $this->labelMap[$instruction->getLabel()] = $index;
+        }
+    }
+
+    /**
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
@@ -152,8 +167,9 @@ class InterpreterContext
     /**
      * @brief Vrátí hodnotu proměnné nebo konstanty.
      * @param Argument $symbol
-     * @throws InterpreterRuntimeException
+     * @return Value
      * @throws InternalErrorException
+     * @throws InterpreterRuntimeException
      */
     public function getSymbolValue(Argument $symbol): Value
     {
@@ -206,7 +222,9 @@ class InterpreterContext
     /**
      * @brief Vybere rámec podle jména (LF, GF, TF).
      * @param string $framename
-     * @throws InterpreterRuntimeException|InternalErrorException
+     * @return Frame
+     * @throws InternalErrorException
+     * @throws InterpreterRuntimeException
      */
     public function &selectFrame(string $framename): Frame
     {
