@@ -12,6 +12,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class Str2IntInstruction extends Instruction {
     /**
@@ -35,18 +36,8 @@ class Str2IntInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $string = $context->getSymbolValue($this->symb1);
-        $index = $context->getSymbolValue($this->symb2);
-
-        if (is_object($string) || is_object($index)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
-        }
-
-        if (!is_string($string) || !is_int($index)) {
-            $stringType = gettype($string);
-            $indexType = gettype($index);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STR2INT: ($stringType) '$string', ($indexType) '$index'.");
-        }
+        $string = $context->getSymbolValue($this->symb1)->getString();
+        $index = $context->getSymbolValue($this->symb2)->getInt();
 
         $len = mb_strlen($string, encoding: 'UTF-8');
         if ($index < 0 || $index >= $len) {
@@ -56,7 +47,7 @@ class Str2IntInstruction extends Instruction {
 
         $mbChar = mb_substr($string, $index, 1, encoding: 'UTF-8');
         $result = mb_ord($mbChar, encoding: 'UTF-8');
-        $context->setVariable($this->var->getText(), $result);
+        $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
     public function __toString() : string {

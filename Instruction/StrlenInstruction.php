@@ -11,6 +11,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class StrlenInstruction extends Instruction {
     /**
@@ -32,19 +33,9 @@ class StrlenInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $value = $context->getSymbolValue($this->symb);
-
-        if (is_object($value)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
-        }
-
-        if (!is_string($value)) {
-            $valueType = gettype($value);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for STRLEN: ($valueType) '$value'.");
-        }
-
+        $value = $context->getSymbolValue($this->symb)->getString();
         $result = mb_strlen($value , encoding: 'UTF-8');
-        $context->setVariable($this->var->getText(), $result);
+        $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
     public function __toString() : string {

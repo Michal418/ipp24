@@ -44,23 +44,23 @@ class Interpreter extends AbstractInterpreter
 
         foreach ($instructions as $index => $instruction) {
             if (is_a($instruction, 'IPP\Student\Instruction\LabelInstruction')) {
-                if (array_key_exists($instruction->getLabel(), $context->labelCache)) {
+                if (array_key_exists($instruction->getLabel(), $context->getLabelMap())) {
                     throw new InterpreterRuntimeException(ReturnCode::SEMANTIC_ERROR,
                         "Label redefinition: '{$instruction->getLabel()}'.");
                 }
 
-                $context->labelCache[$instruction->getLabel()] = $index;
+                $context->getLabelMap()[$instruction->getLabel()] = $index;
             }
         }
 
         $instructionCount = count($instructions);
-        while ($context->running && $context->programCounter < $instructionCount) {
-            $instruction = $instructions[$context->programCounter];
+        while ($context->isRunning() && $context->getProgramCounter() < $instructionCount) {
+            $instruction = $instructions[$context->getProgramCounter()];
             $instruction->execute($context, $io);
-            $context->programCounter++;
+            $context->incrementProgramCounter();
         }
 
-        return $context->exitCode;
+        return $context->getExitCode();
     }
 
     /**

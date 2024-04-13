@@ -27,7 +27,9 @@ class JumpInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $context->programCounter = $context->findLabel($this->label->getText());
+        $label = $this->label->getText();
+        $pc = $context->findLabel($label);
+        $context->setProgramCounter($pc);
     }
 
     public function __toString() : string {

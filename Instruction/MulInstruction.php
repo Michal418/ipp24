@@ -11,6 +11,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class MulInstruction extends Instruction {
     /**
@@ -34,17 +35,22 @@ class MulInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $value1 = $context->getSymbolValue($this->symb1);
-        $value2 = $context->getSymbolValue($this->symb2);
+        $symb1 = $context->getSymbolValue($this->symb1);
+        $symb2 = $context->getSymbolValue($this->symb2);
 
-        if (is_object($value1) || is_object($value2)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+        if (!$symb1->isInitialized() || !$symb2->isInitialized()) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
+                'Attempt to read uninitialized value');
         }
+
+        $value1 = $symb1->getValue();
+        $value2 = $symb2->getValue();
 
         if (!is_int($value1) || !is_int($value2)) {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for multiplication: $value1, $value2.");
         }
-        $context->setVariable($this->var->getText(), $value1 * $value2);
+
+        $context->setVariable($this->var->getText(), new Value(true, $value1 * $value2));
     }
 
     public function __toString() : string {

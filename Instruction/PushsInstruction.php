@@ -32,11 +32,11 @@ class PushsInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $value = $context->getSymbolValue($this->symb);
 
-        if (is_object($value)) {
+        if (!$value->isInitialized()) {
             throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
         }
 
-        $context->stack[] = $value;
+        $context->pushStack($value);
     }
 
     public function __toString() : string {

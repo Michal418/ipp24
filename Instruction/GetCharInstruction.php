@@ -15,6 +15,7 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Uninitialized;
+use IPP\Student\Value;
 
 class GetCharInstruction extends Instruction {
 
@@ -39,25 +40,15 @@ class GetCharInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $string = $context->getSymbolValue($this->symb1);
-        $index = $context->getSymbolValue($this->symb2);
-
-        if (is_object($string) || is_object($index)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
-        }
-
-        if (!is_string($string) || !is_int($index)) {
-            $stringType = gettype($string);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for GETCHAR: ($stringType) '$string'.");
-        }
-
+        $string = $context->getSymbolValue($this->symb1)->getString();
+        $index = $context->getSymbolValue($this->symb2)->getInt();
 
         if ($index < 0 || $index >= mb_strlen($string, encoding: 'UTF-8')) {
             throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid index for GETCHAR: $string, $index.");
         }
 
         $char = mb_substr($string, $index, 1, encoding: 'UTF-8');
-        $context->setVariable($this->var->getText(), $char);
+        $context->setVariable($this->var->getText(), new Value(true, $char));
     }
 
     public function __toString() : string {

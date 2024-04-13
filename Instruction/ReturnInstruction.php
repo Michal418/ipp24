@@ -17,13 +17,8 @@ class ReturnInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $result = array_pop($context->callStack);
-
-        if (is_null($result)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Call stack is empty.");
-        }
-
-        $context->programCounter = $result;
+        $result = $context->popCallStack();
+        $context->setProgramCounter($result);
     }
 
     public function __toString() : string {

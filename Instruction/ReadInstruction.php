@@ -11,6 +11,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class ReadInstruction extends Instruction {
     /**
@@ -41,7 +42,7 @@ class ReadInstruction extends Instruction {
             default => throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: '$t'"),
         };
 
-        $context->setVariable($this->var->getText(), $value);
+        $context->setVariable($this->var->getText(), new Value(true, $value));
     }
 
     public function __toString() : string {

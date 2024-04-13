@@ -33,8 +33,8 @@ class CallInstruction extends Instruction {
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
         $pc = $context->findLabel($this->label->getText());
-        $context->callStack[] = $context->programCounter;
-        $context->programCounter = $pc;
+        $context->pushCallStack($context->getProgramCounter());
+        $context->setProgramCounter($pc);
     }
 
     public function __toString() : string {

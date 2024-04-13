@@ -10,6 +10,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class SetCharInstruction extends Instruction {
     /**
@@ -33,23 +34,13 @@ class SetCharInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $string = $context->getSymbolValue($this->var);
-        $index = $context->getSymbolValue($this->symb1);
-        $char = $context->getSymbolValue($this->symb2);
-
-        if (is_object($string) || is_object($index) || is_object($char)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
-        }
-
-        if (!is_string($string) || !is_int($index) || !is_string($char)) {
-            $stringTYpe = gettype($string);
-            $indexType = gettype($index);
-            $charType = gettype($char);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for SETCHAR: ($stringTYpe) '$string', ($indexType) '$index', ($charType) '$char'.");
-        }
+        $string = $context->getSymbolValue($this->var)->getString();
+        $index = $context->getSymbolValue($this->symb1)->getInt();
+        $char = $context->getSymbolValue($this->symb2)->getString();
 
         if ($index < 0 || $index >= mb_strlen($string, encoding: 'UTF-8')) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for SETCHAR: $string, $index, $char.");
+            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR,
+                "Invalid value for SETCHAR: $string, $index, $char.");
         }
 
         if (mb_strlen($char, encoding: 'UTF-8') > 1) {
@@ -59,8 +50,8 @@ class SetCharInstruction extends Instruction {
         $before = mb_substr($string, 0, $index, encoding: 'UTF-8');
         $after = mb_substr($string, $index + 1, encoding: 'UTF-8');
 
-        $string = $before . $char . $after;
-        $context->setVariable($this->var->getText(), $string);
+        $result = $before . $char . $after;
+        $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
     public function __toString() : string {

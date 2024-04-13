@@ -34,7 +34,9 @@ class JumpIfEqInstruction extends Instruction {
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
         if ($context->eq($this->symb1, $this->symb2)) {
-            $context->programCounter = $context->findLabel($this->label->getText());
+            $label = $this->label->getText();
+            $pc = $context->findLabel($label);
+            $context->setProgramCounter($pc);
         }
     }
 

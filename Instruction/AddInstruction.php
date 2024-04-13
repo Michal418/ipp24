@@ -36,15 +36,15 @@ class AddInstruction extends Instruction {
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
 
-        if (is_object($value1) || is_object($value2)) {
+        if (!$value1->isInitialized() || !$value2->isInitialized()) {
             throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
         }
 
-        if (!is_int($value1) || !is_int($value2)) {
+        if (!is_int($value1->getValue()) || !is_int($value2->getValue())) {
             throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Incompatible types for addition: $value1, $value2.");
         }
 
-        $context->setVariable($this->var->getText(), $value1 + $value2);
+        $context->setVariable($this->var->getText(), $value1->add($value2));
     }
 
     public function __toString() : string {

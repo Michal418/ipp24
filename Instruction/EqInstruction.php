@@ -35,7 +35,9 @@ class EqInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $frame = $context->getFrame($this->var->getText());
         $varName = $context->getVariableName($this->var->getText());
-        $context->selectFrame($frame)[$varName] = $context->eq($this->symb1, $this->symb2);
+        $value1 = $context->getSymbolValue($this->symb1);
+        $value2 = $context->getSymbolValue($this->symb2);
+        $context->selectFrame($frame)->setSymbol($varName, $value1->eq($value2));
     }
 
     public function __toString() : string {

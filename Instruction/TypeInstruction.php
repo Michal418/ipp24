@@ -11,6 +11,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class TypeInstruction extends Instruction {
     /**
@@ -32,27 +33,26 @@ class TypeInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $value = $context->getSymbolValue($this->symb);
-        if (is_int($value)) {
-            $type = 'int';
-        }
-        elseif (is_bool($value)) {
-            $type = 'bool';
-        }
-        elseif (is_string($value)) {
-            $type = 'string';
-        }
-        elseif (is_null($value)) {
-            $type = 'nil';
-        }
-        elseif (is_a($value, 'IPP\Student\Uninitialized')) {
+        $symb = $context->getSymbolValue($this->symb);
+
+        if (!$symb->isInitialized()) {
             $type = '';
         }
         else {
-            $valueType = gettype($value);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type: ($valueType) '$value'.");
+            $value = $symb->getValue();
+
+            if (is_int($value)) {
+                $type = 'int';
+            } elseif (is_bool($value)) {
+                $type = 'bool';
+            } elseif (is_string($value)) {
+                $type = 'string';
+            } else {
+                $type = 'nil';
+            }
         }
-        $context->setVariable($this->var->getText(), $type);
+
+        $context->setVariable($this->var->getText(), new Value(true, $type));
     }
 
     public function __toString() : string {

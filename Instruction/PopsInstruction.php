@@ -30,11 +30,7 @@ class PopsInstruction extends Instruction
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        if (empty($context->stack)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Stack is empty.");
-        }
-
-        $result = array_pop($context->stack);
+        $result = $context->popStack();
         $context->setVariable($this->var->getText(), $result);
     }
 

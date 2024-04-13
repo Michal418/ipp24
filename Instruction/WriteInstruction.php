@@ -30,7 +30,15 @@ class WriteInstruction extends Instruction {
      * @throws InternalErrorException
      */
     public function execute(InterpreterContext & $context, IO $io) : void {
-        $value = $context->getSymbolValue($this->symb);
+        $symb = $context->getSymbolValue($this->symb);
+
+        if (!$symb->isInitialized()) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
+                "Uninitialized variable used in WRITE: $symb");
+        }
+
+        $value = $symb->getValue();
+
         if (is_string($value)) {
             $io->writeString($value);
         }
@@ -40,11 +48,8 @@ class WriteInstruction extends Instruction {
         elseif (is_bool($value)) {
             $io->writeBool($value);
         }
-        elseif (is_null($value)) {
-            $io->writeString('');
-        }
         else {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Uninitialized variable used in WRITE: $value");
+            $io->writeString('');
         }
     }
 

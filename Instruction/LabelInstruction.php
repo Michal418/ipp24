@@ -24,7 +24,6 @@ class LabelInstruction extends Instruction {
     }
 
     public function execute(InterpreterContext & $context, IO $io) : void {
-        // $context->labelCache[$this->label->getText()] = $context->programCounter;
     }
 
     public function getLabel() : string {

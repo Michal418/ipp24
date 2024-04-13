@@ -12,6 +12,7 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
+use IPP\Student\Value;
 
 class Int2CharInstruction extends Instruction {
     /**
@@ -35,21 +36,24 @@ class Int2CharInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $value = $context->getSymbolValue($this->symb);
 
-        if (is_object($value)) {
+        if (!$value->isInitialized()) {
             throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, "Attempt to read uninitialized value");
         }
 
-        if (!is_int($value)) {
-            $valueType = gettype($value);
-            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR, "Invalid type for INT2CHAR: ($valueType) '$value'.");
+        $primitiveValue = $value->getValue();
+
+        if (!is_int($primitiveValue)) {
+            throw new InterpreterRuntimeException(ReturnCode::OPERAND_TYPE_ERROR,
+                "Invalid type for INT2CHAR: $value.");
         }
 
-        if ($value < 0 || $value > 1_114_111) {
-            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR, "Invalid value for INT2CHAR: $value.");
+        if ($primitiveValue < 0 || $primitiveValue > 1_114_111) {
+            throw new InterpreterRuntimeException(ReturnCode::STRING_OPERATION_ERROR,
+                "Invalid value for INT2CHAR: $value.");
         }
 
-        $result = mb_chr($value, encoding: 'UTF-8');
-        $context->setVariable($this->var->getText(), $result);
+        $result = mb_chr($primitiveValue, encoding: 'UTF-8');
+        $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
     public function __toString() : string {

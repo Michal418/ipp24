@@ -38,8 +38,9 @@ class MoveInstruction extends Instruction {
     public function execute(InterpreterContext & $context, IO $io) : void {
         $value = $context->getSymbolValue($this->symb);
 
-        if (is_object($value)) {
-            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR, 'Attempt to read uninitialized value');
+        if (!$value->isInitialized()) {
+            throw new InterpreterRuntimeException(ReturnCode::VALUE_ERROR,
+                'Attempt to read uninitialized value');
         }
 
         $context->setVariable($this->var->getText(), $value);
