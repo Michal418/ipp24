@@ -8,9 +8,10 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 
 /**
-    * @brief Třída reprezentující instrukci.
+ * @brief Třída reprezentující instrukci.
  */
-abstract class Instruction {
+abstract class Instruction
+{
     /**
      * @param string $opcode
      */
@@ -18,7 +19,7 @@ abstract class Instruction {
     {
     }
 
-    public function getOpcode() : string
+    public function getOpcode(): string
     {
         return $this->opcode;
     }
@@ -30,9 +31,9 @@ abstract class Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    abstract public function execute(InterpreterContext & $context, IO $io) : void;
+    abstract public function execute(InterpreterContext &$context, IO $io): void;
 
-    abstract public function __toString() : string;
+    abstract public function __toString(): string;
 }
 
 

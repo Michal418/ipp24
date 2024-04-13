@@ -8,45 +8,54 @@ use IPP\Core\Interface\OutputWriter;
 class IO
 {
     public function __construct(
-        protected InputReader $reader,
+        protected InputReader  $reader,
         protected OutputWriter $stdout,
         protected OutputWriter $stderr)
     {
     }
 
-    public function readInt() : ?int {
+    public function readInt(): ?int
+    {
         return $this->reader->readInt();
     }
 
-    public function readBool() : ?bool {
+    public function readBool(): ?bool
+    {
         return $this->reader->readBool();
     }
 
-    public function readString() : ?string {
+    public function readString(): ?string
+    {
         return $this->reader->readString();
     }
 
-    public function writeBool(bool $value) : void {
-        $this->stdout->writeBool($value);
-    }
-
-    public function writeInt(int $value) : void {
-        $this->stdout->writeInt($value);
-    }
-
-    public function writeString(string $value) : void {
-        $this->stdout->writeString($value);
-    }
-
-    public function errBool(bool $value) : void {
+    public function errBool(bool $value): void
+    {
         $this->stderr->writeBool($value);
     }
 
-    public function errInt(int $value) : void {
+    public function writeBool(bool $value): void
+    {
+        $this->stdout->writeBool($value);
+    }
+
+    public function errInt(int $value): void
+    {
         $this->stderr->writeInt($value);
     }
 
-    public function errString(string $value) : void {
+    public function writeInt(int $value): void
+    {
+        $this->stdout->writeInt($value);
+    }
+
+    public function errString(string $value): void
+    {
         $this->stderr->writeString($value);
+    }
+
+    public function writeString(string $value): void
+    {
+        $this->stdout->writeString($value);
     }
 }

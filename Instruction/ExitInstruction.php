@@ -11,7 +11,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class ExitInstruction extends Instruction {
+class ExitInstruction extends Instruction
+{
     /**
      * @param Argument $symb
      */
@@ -28,7 +29,8 @@ class ExitInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $exitCode = $context->getSymbolValue($this->symb);
 
         if (!$exitCode->isInitialized()) {
@@ -50,8 +52,9 @@ class ExitInstruction extends Instruction {
         $context->stop();
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->symb}";
     }
-};
+}
 

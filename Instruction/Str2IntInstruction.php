@@ -3,7 +3,6 @@
 namespace IPP\Student\Instruction;
 
 
-use IntlChar;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
@@ -14,14 +13,15 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class Str2IntInstruction extends Instruction {
+class Str2IntInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
      * @param Argument $symb2
      */
     public function __construct(protected Argument $var,
-                                protected  Argument $symb1,
+                                protected Argument $symb1,
                                 protected Argument $symb2)
     {
         if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb1->getIppType()) || !IPPType::isVarOrData($symb2->getIppType())) {
@@ -35,7 +35,8 @@ class Str2IntInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $string = $context->getSymbolValue($this->symb1)->getString();
         $index = $context->getSymbolValue($this->symb2)->getInt();
 
@@ -50,8 +51,9 @@ class Str2IntInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

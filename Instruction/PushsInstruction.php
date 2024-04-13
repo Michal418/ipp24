@@ -12,7 +12,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class PushsInstruction extends Instruction {
+class PushsInstruction extends Instruction
+{
     /**
      * @param Argument $symb
      */
@@ -29,7 +30,8 @@ class PushsInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value = $context->getSymbolValue($this->symb);
 
         if (!$value->isInitialized()) {
@@ -39,8 +41,9 @@ class PushsInstruction extends Instruction {
         $context->pushStack($value);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->symb}";
     }
-};
+}
 

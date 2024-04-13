@@ -8,9 +8,9 @@ use IPP\Student\Argument;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use RuntimeException;
 
-class LabelInstruction extends Instruction {
+class LabelInstruction extends Instruction
+{
     /**
      * @param Argument $label
      */
@@ -23,15 +23,18 @@ class LabelInstruction extends Instruction {
         parent::__construct('LABEL');
     }
 
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
     }
 
-    public function getLabel() : string {
+    public function getLabel(): string
+    {
         return $this->label->getText();
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->label}";
     }
-};
+}
 

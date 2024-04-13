@@ -3,7 +3,6 @@
 namespace IPP\Student\Instruction;
 
 
-use IntlChar;
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
 use IPP\Core\ReturnCode;
@@ -14,7 +13,8 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class Int2CharInstruction extends Instruction {
+class Int2CharInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb
@@ -33,7 +33,8 @@ class Int2CharInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value = $context->getSymbolValue($this->symb);
 
         if (!$value->isInitialized()) {
@@ -56,8 +57,9 @@ class Int2CharInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
-};
+}
 

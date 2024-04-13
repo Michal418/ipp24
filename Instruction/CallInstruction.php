@@ -4,17 +4,14 @@ namespace IPP\Student\Instruction;
 
 
 use InvalidArgumentException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Uninitialized;
 
-class CallInstruction extends Instruction {
+class CallInstruction extends Instruction
+{
     /**
      * @param Argument $label
      */
@@ -31,14 +28,16 @@ class CallInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InterpreterRuntimeException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $pc = $context->findLabel($this->label->getText());
         $context->pushCallStack($context->getProgramCounter());
         $context->setProgramCounter($pc);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->label}";
     }
-};
+}
 

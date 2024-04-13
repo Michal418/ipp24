@@ -4,14 +4,13 @@ namespace IPP\Student\Instruction;
 
 
 use InvalidArgumentException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class NotInstruction extends Instruction {
+class NotInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb
@@ -26,7 +25,8 @@ class NotInstruction extends Instruction {
         parent::__construct('NOT');
     }
 
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $frame = $context->getFrame($this->var->getText());
         $value = $context->getSymbolValue($this->symb);
         $varName = $context->getVariableName($this->var->getText());
@@ -34,8 +34,9 @@ class NotInstruction extends Instruction {
         $context->selectFrame($frame)->setSymbol($varName, $result);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
-};
+}
 

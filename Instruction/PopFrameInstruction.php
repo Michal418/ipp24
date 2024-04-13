@@ -7,7 +7,8 @@ use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 
-class PopFrameInstruction extends Instruction {
+class PopFrameInstruction extends Instruction
+{
     public function __construct()
     {
         parent::__construct('POPFRAME');
@@ -16,12 +17,14 @@ class PopFrameInstruction extends Instruction {
     /**
      * @throws InterpreterRuntimeException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $context->popFrame();
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return $this->getOpcode();
     }
-};
+}
 

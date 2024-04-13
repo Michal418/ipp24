@@ -11,7 +11,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class AddInstruction extends Instruction {
+class AddInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -32,7 +33,8 @@ class AddInstruction extends Instruction {
      * @throws InternalErrorException
      * @throws InterpreterRuntimeException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
 
@@ -47,7 +49,8 @@ class AddInstruction extends Instruction {
         $context->setVariable($this->var->getText(), $value1->add($value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}

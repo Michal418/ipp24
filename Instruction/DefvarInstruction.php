@@ -10,7 +10,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class DefvarInstruction extends Instruction {
+class DefvarInstruction extends Instruction
+{
     /**
      * @param Argument $var
      */
@@ -27,12 +28,14 @@ class DefvarInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $context->defvar($this->var->getText());
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var}";
     }
-};
+}
 

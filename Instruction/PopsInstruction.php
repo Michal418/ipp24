@@ -4,7 +4,6 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
@@ -29,12 +28,14 @@ class PopsInstruction extends Instruction
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $result = $context->popStack();
         $context->setVariable($this->var->getText(), $result);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var}";
     }
 }

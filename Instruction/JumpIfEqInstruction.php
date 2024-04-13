@@ -11,7 +11,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class JumpIfEqInstruction extends Instruction {
+class JumpIfEqInstruction extends Instruction
+{
     /**
      * @param Argument $label
      * @param Argument $symb1
@@ -32,7 +33,8 @@ class JumpIfEqInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         if ($context->eq($this->symb1, $this->symb2)) {
             $label = $this->label->getText();
             $pc = $context->findLabel($label);
@@ -40,8 +42,9 @@ class JumpIfEqInstruction extends Instruction {
         }
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->label} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

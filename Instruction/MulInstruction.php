@@ -13,7 +13,8 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class MulInstruction extends Instruction {
+class MulInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -34,7 +35,8 @@ class MulInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $symb1 = $context->getSymbolValue($this->symb1);
         $symb2 = $context->getSymbolValue($this->symb2);
 
@@ -53,8 +55,9 @@ class MulInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $value1 * $value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

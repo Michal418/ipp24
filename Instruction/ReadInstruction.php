@@ -13,7 +13,8 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class ReadInstruction extends Instruction {
+class ReadInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $type
@@ -32,7 +33,8 @@ class ReadInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $t = $this->type->getText();
 
         $value = match ($t) {
@@ -45,8 +47,9 @@ class ReadInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $value));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->type}";
     }
-};
+}
 

@@ -5,17 +5,14 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Uninitialized;
 
-class DprintInstruction extends Instruction {
+class DprintInstruction extends Instruction
+{
     /**
      * @param Argument $symb
      */
@@ -32,12 +29,14 @@ class DprintInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value = $context->getSymbolValue($this->symb);
-        $io->errString((string) $value);
+        $io->errString((string)$value);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->symb}";
     }
 }

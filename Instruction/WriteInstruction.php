@@ -12,7 +12,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class WriteInstruction extends Instruction {
+class WriteInstruction extends Instruction
+{
     /**
      * @param Argument $symb
      */
@@ -29,7 +30,8 @@ class WriteInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $symb = $context->getSymbolValue($this->symb);
 
         if (!$symb->isInitialized()) {
@@ -41,19 +43,17 @@ class WriteInstruction extends Instruction {
 
         if (is_string($value)) {
             $io->writeString($value);
-        }
-        elseif (is_int($value)) {
+        } elseif (is_int($value)) {
             $io->writeInt($value);
-        }
-        elseif (is_bool($value)) {
+        } elseif (is_bool($value)) {
             $io->writeBool($value);
-        }
-        else {
+        } else {
             $io->writeString('');
         }
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->symb}";
     }
 }

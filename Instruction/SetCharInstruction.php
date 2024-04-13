@@ -12,14 +12,15 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class SetCharInstruction extends Instruction {
+class SetCharInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
      * @param Argument $symb2
      */
     public function __construct(protected Argument $var,
-                                protected  Argument $symb1,
+                                protected Argument $symb1,
                                 protected Argument $symb2)
     {
         if ($var->getIppType() !== IPPType::VAR || !IPPType::isVarOrData($symb1->getIppType()) || !IPPType::isVarOrData($symb2->getIppType())) {
@@ -33,7 +34,8 @@ class SetCharInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $string = $context->getSymbolValue($this->var)->getString();
         $index = $context->getSymbolValue($this->symb1)->getInt();
         $char = $context->getSymbolValue($this->symb2)->getString();
@@ -54,8 +56,9 @@ class SetCharInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $result));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

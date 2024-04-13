@@ -10,7 +10,8 @@ use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class JumpInstruction extends Instruction {
+class JumpInstruction extends Instruction
+{
     /**
      * @param Argument $label
      */
@@ -26,14 +27,16 @@ class JumpInstruction extends Instruction {
     /**
      * @throws InterpreterRuntimeException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $label = $this->label->getText();
         $pc = $context->findLabel($label);
         $context->setProgramCounter($pc);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->label}";
     }
-};
+}
 

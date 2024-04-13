@@ -4,14 +4,13 @@ namespace IPP\Student\Instruction;
 
 
 use InvalidArgumentException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class LtInstruction extends Instruction {
+class LtInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -28,7 +27,8 @@ class LtInstruction extends Instruction {
         parent::__construct('LT');
     }
 
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $frame = $context->getFrame($this->var->getText());
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
@@ -37,8 +37,9 @@ class LtInstruction extends Instruction {
         $context->selectFrame($frame)->setSymbol($varName, $value1->lt($value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

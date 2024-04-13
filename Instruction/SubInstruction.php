@@ -3,17 +3,16 @@
 namespace IPP\Student\Instruction;
 
 
-
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
 
-class SubInstruction extends Instruction {
+class SubInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -34,13 +33,15 @@ class SubInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
         $context->setVariable($this->var->getText(), $value1->sub($value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}

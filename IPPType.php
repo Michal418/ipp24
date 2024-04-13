@@ -1,9 +1,11 @@
 <?php
 
 namespace IPP\Student;
+
 use InvalidArgumentException;
 
-enum IPPType {
+enum IPPType
+{
     case INT;
     case BOOL;
     case STRING;
@@ -12,11 +14,13 @@ enum IPPType {
     case TYPE;
     case VAR;
 
-    static function isVarOrData(IPPType $ipptype) : bool {
+    static function isVarOrData(IPPType $ipptype): bool
+    {
         return IPPType::isDataType($ipptype) || $ipptype === IPPType::VAR;
     }
 
-    static function isDataType(IPPType $ipptype) : bool {
+    static function isDataType(IPPType $ipptype): bool
+    {
         return in_array($ipptype, [IPPType::INT, IPPType::BOOL, IPPType::STRING, IPPType::NIL]);
     }
 
@@ -25,7 +29,8 @@ enum IPPType {
      * @return IPPType
      * @throws InvalidArgumentException
      */
-    static function fromString(string $value) : IPPType {
+    static function fromString(string $value): IPPType
+    {
         return match ($value) {
             'int' => IPPType::INT,
             'bool' => IPPType::BOOL,
@@ -38,7 +43,8 @@ enum IPPType {
         };
     }
 
-    static function toString(IPPType $ipptype) : string {
+    static function toString(IPPType $ipptype): string
+    {
         return match ($ipptype) {
             IPPType::INT => 'int',
             IPPType::BOOL => 'bool',

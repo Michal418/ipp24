@@ -3,19 +3,19 @@
 namespace IPP\Student;
 
 use InvalidArgumentException;
-use IPP\Student\Exception\SourceStructureException;
 
 /**
-    * @brief Třída reprezentující argument instrukce.
+ * @brief Třída reprezentující argument instrukce.
  */
-readonly class Argument {
+readonly class Argument
+{
     public function __construct(
         private IPPType $ipptype,
         private string  $text)
     {
         switch ($ipptype) {
             case IPPType::INT:
-                if (!is_numeric($text) || (((float) $text) !== ((float) ((int) $text)))) {
+                if (!is_numeric($text) || (((float)$text) !== ((float)((int)$text)))) {
                     throw new InvalidArgumentException("Invalid int literal: $text");
                 }
                 break;
@@ -45,17 +45,17 @@ readonly class Argument {
         }
     }
 
-    public function getIppType() : IPPType
+    public function getIppType(): IPPType
     {
         return $this->ipptype;
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         $str = IPPType::toString($this->ipptype);
         return "Argument(type=$str, text=$this->text)";

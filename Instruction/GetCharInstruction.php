@@ -5,19 +5,16 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Uninitialized;
 use IPP\Student\Value;
 
-class GetCharInstruction extends Instruction {
+class GetCharInstruction extends Instruction
+{
 
     /**
      * @param Argument $var
@@ -39,7 +36,8 @@ class GetCharInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $string = $context->getSymbolValue($this->symb1)->getString();
         $index = $context->getSymbolValue($this->symb2)->getInt();
 
@@ -51,8 +49,9 @@ class GetCharInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $char));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

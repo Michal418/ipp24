@@ -14,25 +14,16 @@ use IPP\Student\Instruction\Instruction;
 
 
 /**
-    @brief Třída interpretu IPPcode24.
+ * @brief Třída interpretu IPPcode24.
  */
 class Interpreter extends AbstractInterpreter
 {
-    /**
-     * @return Instruction[]
-     * @throws SourceStructureException
-     */
-    private function readInstructions() : array {
-        $dom = $this->source->getDOMDocument();
-        return $this->parseXml($dom);
-    }
-
     /**
      * @throws SourceStructureException
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute() : int
+    public function execute(): int
     {
         $context = new InterpreterContext();
         $io = new IO($this->input, $this->stdout, $this->stderr);
@@ -64,21 +55,13 @@ class Interpreter extends AbstractInterpreter
     }
 
     /**
-     * @brief Převede escape v řetězci sekvence na znaky.
-     * @param string $str
-     * @return string
+     * @return Instruction[]
+     * @throws SourceStructureException
      */
-    protected static function unescape(string $str) : string {
-        $result = $str;
-
-        if (preg_match_all('/\\\\([0-9]{3})/', $str, $matches)) {
-            foreach ($matches[1] as $match) {
-                $intValue = intval($match);
-                $result = str_replace("\\$match", chr($intValue), $result);
-            }
-        }
-
-        return $result;
+    private function readInstructions(): array
+    {
+        $dom = $this->source->getDOMDocument();
+        return $this->parseXml($dom);
     }
 
     /**
@@ -86,7 +69,7 @@ class Interpreter extends AbstractInterpreter
      * @return Instruction[]
      * @throws SourceStructureException
      */
-    private function parseXml(DOMDocument $dom) : array
+    private function parseXml(DOMDocument $dom): array
     {
         /**
          * @var Instruction[] $instructions
@@ -149,8 +132,7 @@ class Interpreter extends AbstractInterpreter
                 $ipptypeStr = trim($argumentNode->getAttribute('type'));
                 try {
                     $ipptype = IPPType::fromString($ipptypeStr);
-                }
-                catch (InvalidArgumentException $ex) {
+                } catch (InvalidArgumentException $ex) {
                     throw new SourceStructureException($ex->getMessage());
                 }
 
@@ -169,8 +151,7 @@ class Interpreter extends AbstractInterpreter
 
                 try {
                     $argument = new Argument($ipptype, $text);
-                }
-                catch (InvalidArgumentException $ex) {
+                } catch (InvalidArgumentException $ex) {
                     throw new SourceStructureException($ex->getMessage());
                 }
 
@@ -178,15 +159,13 @@ class Interpreter extends AbstractInterpreter
             }
 
             if (array_key_exists(1, $arguments) && !array_key_exists(0, $arguments)
-            || array_key_exists(2, $arguments) && !array_key_exists(1, $arguments)) {
+                || array_key_exists(2, $arguments) && !array_key_exists(1, $arguments)) {
                 throw new SourceStructureException('Invalid argument.');
             }
 
             try {
                 $instruction = $factory->create($opcode, $arguments);
-            }
-            catch (InvalidArgumentException $ex)
-            {
+            } catch (InvalidArgumentException $ex) {
                 throw new SourceStructureException($ex->getMessage());
             }
 
@@ -194,5 +173,24 @@ class Interpreter extends AbstractInterpreter
         }
 
         return $instructions;
+    }
+
+    /**
+     * @brief Převede escape v řetězci sekvence na znaky.
+     * @param string $str
+     * @return string
+     */
+    protected static function unescape(string $str): string
+    {
+        $result = $str;
+
+        if (preg_match_all('/\\\\([0-9]{3})/', $str, $matches)) {
+            foreach ($matches[1] as $match) {
+                $intValue = intval($match);
+                $result = str_replace("\\$match", chr($intValue), $result);
+            }
+        }
+
+        return $result;
     }
 }

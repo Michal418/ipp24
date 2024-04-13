@@ -4,18 +4,14 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Interpreter;
-use IPP\Student\Uninitialized;
 
-class AndInstruction extends Instruction {
+class AndInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -36,7 +32,8 @@ class AndInstruction extends Instruction {
      * @throws InternalErrorException
      * @throws InterpreterRuntimeException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $frame = $context->getFrame($this->var->getText());
         $value1 = $context->getSymbolValue($this->symb1);
         $value2 = $context->getSymbolValue($this->symb2);
@@ -45,8 +42,8 @@ class AndInstruction extends Instruction {
         $context->selectFrame($frame)->setSymbol($varName, $value1->and($value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
 }
-

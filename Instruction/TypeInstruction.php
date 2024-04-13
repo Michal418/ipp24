@@ -5,7 +5,6 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
 use IPP\Student\InterpreterContext;
@@ -13,7 +12,8 @@ use IPP\Student\IO;
 use IPP\Student\IPPType;
 use IPP\Student\Value;
 
-class TypeInstruction extends Instruction {
+class TypeInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb
@@ -32,13 +32,13 @@ class TypeInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $symb = $context->getSymbolValue($this->symb);
 
         if (!$symb->isInitialized()) {
             $type = '';
-        }
-        else {
+        } else {
             $value = $symb->getValue();
 
             if (is_int($value)) {
@@ -55,8 +55,9 @@ class TypeInstruction extends Instruction {
         $context->setVariable($this->var->getText(), new Value(true, $type));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
-};
+}
 

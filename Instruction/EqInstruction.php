@@ -4,18 +4,13 @@ namespace IPP\Student\Instruction;
 
 
 use InvalidArgumentException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
-use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
-use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Uninitialized;
 
-class EqInstruction extends Instruction {
+class EqInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb1
@@ -32,7 +27,8 @@ class EqInstruction extends Instruction {
         parent::__construct('EQ');
     }
 
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $frame = $context->getFrame($this->var->getText());
         $varName = $context->getVariableName($this->var->getText());
         $value1 = $context->getSymbolValue($this->symb1);
@@ -40,8 +36,9 @@ class EqInstruction extends Instruction {
         $context->selectFrame($frame)->setSymbol($varName, $value1->eq($value2));
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb1} {$this->symb2}";
     }
-};
+}
 

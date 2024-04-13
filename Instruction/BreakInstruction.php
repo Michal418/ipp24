@@ -2,19 +2,18 @@
 
 namespace IPP\Student\Instruction;
 
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
-use IPP\Student\Uninitialized;
 
-class BreakInstruction extends Instruction {
+class BreakInstruction extends Instruction
+{
     public function __construct()
     {
         parent::__construct('BREAK');
     }
 
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $io->errString('Program counter: ' . $context->getProgramCounter() . PHP_EOL);
         $io->errString('Global frame: ' . print_r($context->getGlobalFrame(), true) . PHP_EOL);
         $io->errString('Local frame: ' .
@@ -22,7 +21,8 @@ class BreakInstruction extends Instruction {
         $io->errString('Temporary frame: ' . print_r($context->getTemporaryFrame(), true) . PHP_EOL);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return $this->getOpcode();
     }
 }

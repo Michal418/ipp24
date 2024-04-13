@@ -5,18 +5,15 @@ namespace IPP\Student\Instruction;
 
 use InvalidArgumentException;
 use IPP\Core\Exception\InternalErrorException;
-use IPP\Core\Interface\InputReader;
-use IPP\Core\Interface\OutputWriter;
 use IPP\Core\ReturnCode;
 use IPP\Student\Argument;
 use IPP\Student\Exception\InterpreterRuntimeException;
-use IPP\Student\Interpreter;
 use IPP\Student\InterpreterContext;
 use IPP\Student\IO;
 use IPP\Student\IPPType;
-use IPP\Student\Uninitialized;
 
-class MoveInstruction extends Instruction {
+class MoveInstruction extends Instruction
+{
     /**
      * @param Argument $var
      * @param Argument $symb
@@ -35,7 +32,8 @@ class MoveInstruction extends Instruction {
      * @throws InterpreterRuntimeException
      * @throws InternalErrorException
      */
-    public function execute(InterpreterContext & $context, IO $io) : void {
+    public function execute(InterpreterContext &$context, IO $io): void
+    {
         $value = $context->getSymbolValue($this->symb);
 
         if (!$value->isInitialized()) {
@@ -46,9 +44,10 @@ class MoveInstruction extends Instruction {
         $context->setVariable($this->var->getText(), $value);
     }
 
-    public function __toString() : string {
+    public function __toString(): string
+    {
         return "{$this->getOpcode()} {$this->var} {$this->symb}";
     }
-};
+}
 
 
